@@ -155,7 +155,6 @@ print('\nTest squared error:', test_acc)
 
 # Save The Entire Model
 
-!mkdir -p SavedModels
 model.save(model_dir)
 
 print ("Model Saved")
