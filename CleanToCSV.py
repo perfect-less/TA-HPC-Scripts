@@ -23,7 +23,7 @@ def GetFilesName(mypath, printIt = True):
 	av_flights_num = len(flight_files)
 
 	if printIt == True:
-    	print(".Number of Available Flights: {}".format(av_flights_num))
+		print(".Number of Available Flights: {}".format(av_flights_num))
 
 	return flight_files
 
