@@ -1,6 +1,5 @@
 import pandas as pd 
 import numpy as np
-import matplotlib.pyplot as plt
 
 from os import listdir
 from os.path import isfile, join
