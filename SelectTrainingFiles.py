@@ -19,20 +19,20 @@ flight_files = dpm.GetFilesName(file_path)
 
 flightDFs = list()
 for i in range(len(flight_files)):
-    flightDFs.append( pd.read_csv("{path}{fname}".format(path= file_path, fname= flight_files[i])) )
+	flightDFs.append( pd.read_csv("{path}{fname}".format(path= file_path, fname= flight_files[i])) )
     
 len(flightDFs)
 
 if True:
-    col_name = "theta_rad"
+	col_name = "theta_rad"
 
-    for i in range(len(flight_files)):
+	for i in range(len(flight_files)):
 
-        flightDFs[i]["theta_del_rad"] = flightDFs[i][col_name] - flightDFs[i]["theta_trim_rad"]
+	    flightDFs[i]["theta_del_rad"] = flightDFs[i][col_name] - flightDFs[i]["theta_trim_rad"]
 
-        #lightDFs[i] = flightDFs[i].drop(columns= ["Unnamed: 0"])
+	    #lightDFs[i] = flightDFs[i].drop(columns= ["Unnamed: 0"])
 
-        flightDFs[i].to_csv("{path}{fname}".format(path= file_path, fname= flight_files[i]), index = False)
+	    flightDFs[i].to_csv("{path}{fname}".format(path= file_path, fname= flight_files[i]), index = False)
 
 # Calculating Max C
 max_c = 0
@@ -40,8 +40,8 @@ rad2deg = 180 / math.pi
 
 # Set Max length for x axis
 for i in range(len(flightDFs)):
-    if flightDFs[i].shape[0] > max_c:
-        max_c = flightDFs[i].shape[0]
+	if flightDFs[i].shape[0] > max_c:
+	    max_c = flightDFs[i].shape[0]
 
 print ("max_C :", max_c)
 

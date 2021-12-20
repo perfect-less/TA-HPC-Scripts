@@ -11,46 +11,46 @@ from multiprocessing import Pool
 from math import sin, cos, asin, sqrt, pi, ceil,floor
 
 def log_result(retval):
-    results.append(retval)
-    if len(results) % max(data_count//50, 1) == 0 and data_count > 0:
-        print("\r", "...{:.0%} done".format(len(results)/data_count), end= "") # end= '\r'
+	results.append(retval)
+	if len(results) % max(data_count//50, 1) == 0 and data_count > 0:
+		print("\r", "...{:.0%} done".format(len(results)/data_count), end= "") # end= '\r'
 
 
 def GetFilesName(mypath, printIt = True):
-    #mypath = "Flights_35/"
+	#mypath = "Flights_35/"
 
-    flight_files = [f for f in listdir(mypath) if isfile(join(mypath, f))]
-    av_flights_num = len(flight_files)
-    
-    if printIt == True:
-        print(".Number of Available Flights: {}".format(av_flights_num))
-    
-    return flight_files
+	flight_files = [f for f in listdir(mypath) if isfile(join(mypath, f))]
+	av_flights_num = len(flight_files)
+
+	if printIt == True:
+    	print(".Number of Available Flights: {}".format(av_flights_num))
+
+	return flight_files
 
 def DoTheWork(func, p_num, filepath, lname = "Sampling"):
-    
-    print("[*]============Starting {} Process".format(lname))
-    
-    start_time = time.time()
-    
-    flight_files = GetFilesName(filepath)
-    
-    pool = Pool(p_num)
-    results = []
-    for item in flight_files:
-        pool.apply_async(func, args=[item], callback=log_result)
-        
-    print ("..start making pool")
-    pool.close()
-    pool.join()
-    
-    end_time = time.time()
-    work_time = end_time - start_time
-    
-    print ("[V]{} process took ".format(lname) + str(work_time) + " seconds to complete")
-    print ("---------------------------------------------")
-    
-    return []
+
+	print("[*]============Starting {} Process".format(lname))
+
+	start_time = time.time()
+
+	flight_files = GetFilesName(filepath)
+
+	pool = Pool(p_num)
+	results = []
+	for item in flight_files:
+    	pool.apply_async(func, args=[item], callback=log_result)
+	    
+	print ("..start making pool")
+	pool.close()
+	pool.join()
+
+	end_time = time.time()
+	work_time = end_time - start_time
+
+	print ("[V]{} process took ".format(lname) + str(work_time) + " seconds to complete")
+	print ("---------------------------------------------")
+
+	return []
 
 
 
@@ -68,30 +68,30 @@ if __name__ == '__main__':
 	flight_files = GetFilesName(raw_path, False)
 	data_count = len(flight_files)
 
-	
-    # Mark start time
-    startTime = time.time()
-    print ("=============================================")
-    print ("Start at {}".format(startTime))
 
-    
-    # Map Our Function to Pool Processes
-    
-    #with Pool(8) as p:
-    #    p.apply_async(dpc.ReSampling, args= flight_files, callback=log_result)
-    
-    # Start with reworking the sampling
-    results = DoTheWork(dpc.ReSampling, 4, raw_path, "ReSampling")
-    
-    # And then Processing our data
-    results = DoTheWork(dpc.CleanAndCompleteData, 4, sam_path, "CleanAndCut")
+	# Mark start time
+	startTime = time.time()
+	print ("=============================================")
+	print ("Start at {}".format(startTime))
 
-    #mark the end time
-    endTime = time.time()
 
-    #calculate the total time it took to complete the work
-    workTime =  endTime - startTime
+	# Map Our Function to Pool Processes
 
-    #print results
-    #print ("[***]The job took " + str(workTime) + " seconds to complete")
-    print ("[***]The job took {} Minutes and {:.0f} Seconds to complete".format(floor(workTime/60), workTime % 60))
+	#with Pool(8) as p:
+	#    p.apply_async(dpc.ReSampling, args= flight_files, callback=log_result)
+
+	# Start with reworking the sampling
+	results = DoTheWork(dpc.ReSampling, 4, raw_path, "ReSampling")
+
+	# And then Processing our data
+	results = DoTheWork(dpc.CleanAndCompleteData, 4, sam_path, "CleanAndCut")
+
+	#mark the end time
+	endTime = time.time()
+
+	#calculate the total time it took to complete the work
+	workTime =  endTime - startTime
+
+	#print results
+	#print ("[***]The job took " + str(workTime) + " seconds to complete")
+	print ("[***]The job took {} Minutes and {:.0f} Seconds to complete".format(floor(workTime/60), workTime % 60))
