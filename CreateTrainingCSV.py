@@ -11,10 +11,10 @@ def GetFilesName(mypath, printIt = True):
 
     flight_files = [f for f in listdir(mypath) if isfile(join(mypath, f))]
     av_flights_num = len(flight_files)
-    
+
     if printIt == True:
         print(".Number of Available Flights: {}".format(av_flights_num))
-    
+
     return flight_files
 
 
@@ -46,7 +46,7 @@ print ("------Start Creating Data Set------")
 flightDFs = list()
 for i in range(len(flight_files)):
     file = pd.read_csv("{path}{fname}".format(path= file_path, fname= flight_files[ind[i]]))
-    
+
     hd = False
     mo = 'a'
     if i == 0 or i == train_num:
@@ -58,10 +58,10 @@ for i in range(len(flight_files)):
         file.to_csv("{}Train_set_{}.csv".format (write_path, F_Id), mode=mo, header=hd, index=False)
     else:
         file.to_csv("{}Test_set_{}.csv".format (write_path, F_Id), mode=mo, header=hd, index=False)
-        
+
         origin = "{o_path}{fname}".format(o_path= file_path, fname = flight_files[ind[i]])
         target = "{w_path}{fname}".format(w_path= copy_path, fname = flight_files[ind[i]])
-    
+
         shutil.copyfile(origin, target)
     
 print ("------All Done------")
