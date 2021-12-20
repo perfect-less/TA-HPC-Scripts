@@ -38,7 +38,7 @@ def DoTheWork(func, p_num, filepath, lname = "Sampling"):
 	pool = Pool(p_num)
 	results = []
 	for item in flight_files:
-    	pool.apply_async(func, args=[item], callback=log_result)
+		pool.apply_async(func, args=[item], callback=log_result)
 	    
 	print ("..start making pool")
 	pool.close()
