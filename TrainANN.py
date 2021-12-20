@@ -138,9 +138,6 @@ epochs = history.epoch
 hist = pd.DataFrame(history.history)
 acc = hist["mean_squared_error"]
 
-hist_list.append(history)
-plot_the_curve(epochs, acc)
-
 
 
 ## Evaluating model agains test data
