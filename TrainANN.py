@@ -11,7 +11,7 @@ import DataProcessMethods as dpm
 
 
 ## Save Model Location
-model_dir = 'SavedModels/ann_2021_1220_2030'
+model_dir = 'SavedModels/ann_2021_1221_1200'
 
 ## Importing the Datas (train and test datas)
 
@@ -139,6 +139,13 @@ hist = pd.DataFrame(history.history)
 acc = hist["mean_squared_error"]
 
 
+# Save The Entire Model
+
+model.save(model_dir)
+
+print ("Model Saved")
+
+
 
 ## Evaluating model agains test data
 
@@ -149,9 +156,4 @@ print('\nTest squared error:', test_acc)
 
 
 
-# Save The Entire Model
-
-model.save(model_dir)
-
-print ("Model Saved")
 
