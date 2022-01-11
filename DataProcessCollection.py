@@ -10,7 +10,7 @@ D_Id = "_cut_UC"
 from scipy.signal import butter,filtfilt# Filter requirements.
 fs = 1.0       # sample rate, Hz
 cutoff = 0.06 #0.055 #0.07     # desired cutoff frequency of the filter, Hz ,      slightly higher than actual 2 Hz
-order = 8       # sin wave can be approx represented as quadratic
+order = 8       
 def butter_lowpass_filter(data, cutoff, fs, order):
     
     nyq = 0.5 * fs # Nyquist Frequency
@@ -114,6 +114,8 @@ def CleanAndCompleteData(fname):
     
     filter_list = ["hbaro_m", "hralt_m", "aoac_rad", "theta_rad", "theta_trim_rad", "cas_mps", "elv_l_rad", "elv_r_rad", "flap_te_pos", "hdot_2_mps", "gs_dev_ddm", "dist_to_land"]
     
+    filter_list = [] # Not doing low pass filter
+
     #column_list = ["time_s", "hbaro_m", "hralt_m", "hselected_m", "aoac_rad", "theta_rad", "theta_trim_rad", "cas_mps", "tas_mps",
     #            "gs_mps", "airspd_selected_mps", "elv_l_rad", "elv_r_rad", "hdot_1_mps", "hdot_2_mps", "hdot_selected_mps", "flap_te_pos", 
     #            "n11_rpm", "n12_rpm", "n13_rpm", "n14_rpm", "n1_cmd_rpm", "gs_dev_ddm", "gamma_acc_mps2", "very_clean_hdot_2_mps",                         "dist_to_land"]
@@ -155,10 +157,6 @@ def CleanAndCompleteData(fname):
             # Butter Filtering
             if column_name in filter_list:
                 new_DF[column_name] = pd.Series( butter_lowpass_filter(new_DF[column_name].to_numpy(), cutoff, fs, order) )                    
-
-            # Filtering Large Deltas
-
-            # new_DF[column_name] = new_DF[column_name].interpolate()
 
             if movingAverageWin > 0:
                 new_DF[column_name] = new_DF[column_name].rolling(window=movingAverageWin).mean()

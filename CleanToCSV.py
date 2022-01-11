@@ -81,10 +81,10 @@ if __name__ == '__main__':
 	#    p.apply_async(dpc.ReSampling, args= flight_files, callback=log_result)
 
 	# Start with reworking the sampling
-	results = DoTheWork(dpc.ReSampling, 4, raw_path, "ReSampling")
+	results = DoTheWork(dpc.ReSampling, 16, raw_path, "ReSampling")
 
 	# And then Processing our data
-	results = DoTheWork(dpc.CleanAndCompleteData, 4, sam_path, "CleanAndCut")
+	results = DoTheWork(dpc.CleanAndCompleteData, 16, sam_path, "CleanAndCut")
 
 	#mark the end time
 	endTime = time.time()
