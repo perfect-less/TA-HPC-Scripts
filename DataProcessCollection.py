@@ -57,6 +57,8 @@ def ReSampling(fname):
     n_data["very_clean_hdot_2_mps"] = n_data["hdot_2_mps"] * 1
     n_data["very_clean_hdot_2_mps"] = n_data["very_clean_hdot_2_mps"].interpolate()
     n_data["very_clean_hdot_2_mps"] = n_data["very_clean_hdot_2_mps"].rolling(window=60).mean()
+
+    n_data["delta_very_clean_hdot_2_mps"] = n_data["very_clean_hdot_2_mps"].shift(periods= -5) - n_data["hdot_2_mps"]
     
     # Determining CutOff point
     Tmax = f_dat.loc[ f_dat.shape[0] - 1, "time_s" ]
@@ -110,7 +112,7 @@ def CleanAndCompleteData(fname):
                 "n11_rpm", "n12_rpm", "n13_rpm", "n14_rpm", "n1_cmd_rpm", "pla_1_rad", "pla_2_rad", "pla_3_rad", "pla_4_rad", "ctrlcolumn_pos_capt", "ctrlcolumn_pos_fo", "ctrlcolumn_pos_fo", "ctrlwheel_pos_fo",
                 "gs_dev_ddm", "loc_dev_ddm", "lon_rad", "lat_rad", "phi_rad", "gmt_hr", "gmt_min", "gmt_s", "drift_rad", "temp_static_deg", "temp_total_degC",
                 "ws_mps", "wdir_rad", "rud_rad", "rud_pedal_pos", "ail_l_rad", "ail_r_rad", "ax_mps2", "ay_mps2", "az_mps2", "chi_rad", "psi_rad", "psi_selected_rad",
-                "very_clean_hdot_2_mps", "dist_to_land"]
+                "very_clean_hdot_2_mps", "delta_very_clean_hdot_2_mps", "dist_to_land"]
     
     filter_list = ["hbaro_m", "hralt_m", "aoac_rad", "theta_rad", "theta_trim_rad", "cas_mps", "elv_l_rad", "elv_r_rad", "flap_te_pos", "hdot_2_mps", "gs_dev_ddm", "dist_to_land"]
     
