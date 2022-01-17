@@ -149,6 +149,7 @@ def CleanAndCompleteData(fname):
             if column_name == "elv_l_rad":
                 # Just Delete all the out of range elevator param.
                 new_DF.loc[ (new_DF[column_name]).abs() > 30 * math.pi / 180 , column_name ] = None
+                new_DF.loc[ (new_DF[column_name]).abs() <-15 * math.pi / 180 , column_name ] = None
                 
             if column_name == "elv_r_rad":
                 # Just Delete all the out of range elevator param.

@@ -11,7 +11,7 @@ import DataProcessMethods as dpm
 
 
 ## Save Model Location
-model_dir = 'SavedModels/ann_2022_0117_1600'
+model_dir = 'SavedModels/ann_2022_0117_1630'
 
 ## Importing the Datas (train and test datas)
 
