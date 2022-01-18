@@ -11,7 +11,7 @@ import DataProcessMethods as dpm
 
 
 ## Save Model Location
-model_dir = 'SavedModels/ann_2022_0117_1630'
+model_dir = 'SavedModels/ann_2022_0118_1000'
 
 ## Importing the Datas (train and test datas)
 
@@ -60,8 +60,8 @@ feature_columns.append(cas_mps)
 hdot_2_mps = tf.feature_column.numeric_column("hdot_2_mps")
 feature_columns.append(hdot_2_mps)
 
-delta_hdot_2_mps = tf.feature_column.numeric_column("delta_very_clean_hdot_2_mps")
-feature_columns.append(delta_hdot_2_mps)
+# delta_hdot_2_mps = tf.feature_column.numeric_column("delta_very_clean_hdot_2_mps")
+# feature_columns.append(delta_hdot_2_mps)
 
 # Represent gs_dev_ddm as a floating-point value.
 # gamma_error_rad = tf.feature_column.numeric_column("gamma_error_rad") #gs_dev_ddm gamma_error_rad
