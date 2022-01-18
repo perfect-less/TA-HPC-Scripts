@@ -101,6 +101,10 @@ for i in range(len(flightDFs)):
     if (flightDFs[i].theta_trim_rad.min() < -6 / rad2deg): # -10
         i_zeros.append(i)
         empty_n += 1
+
+    if (flightDFs[i].theta_del_rad.min() < -20 / rad2deg):
+        i_zeros.append(i)
+        empty_n += 1
         
 print("min_elv = {}".format(min_elv * rad2deg))
 print("max_elv = {}".format(max_elv * rad2deg))
