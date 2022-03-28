@@ -3,6 +3,10 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# Folders
+Data/
+Data/*
+
 # Custom Files
 CheatSheet
 Test.py
