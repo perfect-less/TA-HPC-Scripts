@@ -1,6 +1,7 @@
 import sys
 
 from hpcscripts.option import pathhandler
+from hpcscripts.option import globalparams as G_PARAMS
 from hpcscripts.cleaners import cleantocsv
 from hpcscripts.cleaners.utils import datacleaning
 
@@ -9,8 +10,7 @@ def main ():
     
     pathhandler.InitDataDirectories()
 
-    # cleantocsv.run (4)
-    datacleaning.ReSampling("flight_10134.zip")
+    cleantocsv.run (G_PARAMS.DATAPROCESSING_POOL)
     
 
     print ("done")

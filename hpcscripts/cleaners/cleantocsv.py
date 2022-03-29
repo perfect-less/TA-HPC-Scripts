@@ -19,7 +19,8 @@ def log_result(retval):
     # if len(results) % max(data_count//50, 1) == 0 and data_count > 0:
     #     print("\r", "...{:.0%} done".format(len(results)/data_count), end= "")
 
-    print ("..callback called")
+    # print ("..callback called")
+    pass
 
 
 def CleaningWork(func, p_num, filepath, lname = "Sampling"):
@@ -57,6 +58,10 @@ def run(pool_size = 16):
     sam_path = join(pathhandler.GetProcessedDataPath(), "Sampled")
     cln_path = join(pathhandler.GetProcessedDataPath(), "Cleaned")
     app_path = join(pathhandler.GetProcessedDataPath(), "Approach")
+
+    pathhandler.ClearProcessedDir("Sampled")
+    pathhandler.ClearProcessedDir("Cleaned")
+    pathhandler.ClearProcessedDir("Approach")
 
     flight_files = GetFilesName(raw_path, False)
     data_count = len(flight_files)

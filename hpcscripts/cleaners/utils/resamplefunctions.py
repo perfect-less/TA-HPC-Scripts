@@ -50,13 +50,15 @@ def TraceCutOffPoint(flight_DF: pd.DataFrame, cutOut_distance):
     return touchdown_index, trace_index
 
 
-def ReIndexFlightData(flight_DF, target_frequency: int, touchdown_index, selected_columns):
+def ReIndexFlightData(flight_DF, target_frequency: int, touchdown_index, selected_columns: list):
     """Return new flight_DF and touchdown_index with new index based on 
     target_frequency[Hz]"""
     sampling_freq = 1/flight_DF["time_s"][1]
     divider = int (sampling_freq / target_frequency)
 
     i_list = [a*divider for a in range(int(flight_DF.shape[0]/divider))]
+    selected_columns.append("smooth_hdot_mps")
+    selected_columns.append("delta_smooth_hdot_mps")
 
     flight_DF = pd.DataFrame( flight_DF.loc[i_list, selected_columns] )
     flight_DF.reset_index(drop=True, inplace=True)

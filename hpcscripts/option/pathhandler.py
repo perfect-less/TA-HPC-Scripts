@@ -1,5 +1,8 @@
 import sys 
 import os
+import glob
+
+import hpcscripts.option.globalparams as G_PARAMS
 
 
 def GetDataPath():
@@ -26,17 +29,15 @@ def GetProcessedPath(dir="Sampled"):
     return os.path.join(GetProcessedDataPath(), dir)
 
 
+def ClearProcessedDir(dir):
+    files = glob.glob(os.path.join(GetProcessedPath(dir), '*'))
+
+    for file in files:
+        os.remove(file)
+
+
 def InitDataDirectories():
-    important_dir = [
-        "Data",
-        "Data/Models",
-        "Data/Raw",
-        "Data/Results",
-        "Data/Processed",
-        "Data/Processed/Sampled",
-        "Data/Processed/Approach",
-        "Data/Processed/Cleaned"
-    ]
+    important_dir = G_PARAMS.DATA_DIRECORIES
 
     for dir in important_dir:
         full_path = os.path.join (GetThisDir(), os.pardir, os.pardir, dir)
