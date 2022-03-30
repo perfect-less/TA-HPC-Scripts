@@ -10,7 +10,6 @@ from hpcscripts.cleaners.utils.cleaningfunctions import *
 
 
 def ReSampling(fname):
-
     print("..start sampling {}".format(fname))
 
     # Resampling Parameters
@@ -46,8 +45,7 @@ def ReSampling(fname):
 
 
 
-def CleanAndCompleteData(fname):
-        
+def CleanAndCompleteData(fname):        
     print("..start Cleaning {}".format(fname))
     
     # Cleaning Params
@@ -73,13 +71,18 @@ def CleanAndCompleteData(fname):
     flight_DF = pd.concat( [flight_DF, pd.DataFrame(gamma_np, columns=["gamma_rad"])], axis=1)
     flight_DF["gamma_error_rad"] = target_gamma - flight_DF["gamma_rad"]
 
+    # Calculate delta between theta and theta_trim
+    flight_DF["theta_del_rad"] = flight_DF["theta_rad"] - flight_DF["theta_trim_rad"]
+
     # Calculate average N1 and flap position    
     flight_DF["N1s_rpm"] = (flight_DF["n11_rpm"] + flight_DF["n12_rpm"] + flight_DF["n13_rpm"] + flight_DF["n14_rpm"]) / 4
     flight_DF["flap_te_pos"] = flight_DF["flap_te_pos"] / 100
     
+
     # Save to  CSV for documentation
     flight_DF.to_csv("{writedir}/{fname}".format(writedir= write_dir, fname= fname), index=False)
     
+
     # Cut Into Only Approach Phase    
     minT = flight_DF.loc[0, "fParam"]
     maxT = flight_DF.loc[1, "fParam"]
@@ -90,7 +93,8 @@ def CleanAndCompleteData(fname):
     # Remove fParam
     flight_DF.drop("fParam", axis = 1, inplace= True)
     
+
     # Save another new CSV
     flight_DF.to_csv("{writedir}/{fname}".format(writedir= approach_dir, fname= fname), index=False)
     
-    print("..done Sample {}".format(fname))
+    print("..done Cleaning {}".format(fname))

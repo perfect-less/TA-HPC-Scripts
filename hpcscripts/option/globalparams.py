@@ -4,7 +4,6 @@ from math import pi
 DATAPROCESSING_POOL = 4
 
 # CLEANING AND RESAMPLING
-
 TARGET_GAMMA = -3 * pi / 180
 TARGET_FREQUENCY = 1 # Hz    
 CUTOUT_DISTANCE  = 15.39  #10.5 #18.52 # Km, ~ 10 Nm
@@ -32,7 +31,6 @@ LEFT_ALONE_LIST = ["time_s", "flap_te_pos", "cas_mps", "theta_rad", "aoac_rad"]
 
 
 # OPERATIONAL
-
 DATA_DIRECORIES = [
         "Data",
         "Data/Models",
@@ -42,4 +40,5 @@ DATA_DIRECORIES = [
         "Data/Processed/Sampled",
         "Data/Processed/Approach",
         "Data/Processed/Cleaned",
+        "Data/Processed/Selected"
     ]
