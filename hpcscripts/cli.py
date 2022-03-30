@@ -5,6 +5,7 @@ from hpcscripts.option import globalparams as G_PARAMS
 from hpcscripts.cleaners import cleantocsv
 from hpcscripts.cleaners.utils import datacleaning
 from hpcscripts.selectors import flightselector
+from hpcscripts.trainers import traindatahandler
 
 def main ():
     print ("CLI main")
@@ -19,6 +20,7 @@ def main ():
     flightselector.run()
 
     # Create training csv and train data
+    traindatahandler.run()
 
     # Post process and evaluate model
 
