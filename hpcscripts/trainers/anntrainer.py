@@ -1,5 +1,6 @@
 """This module is responsible for creating ANN model and train it based on configuration"""
 
+import logging
 import os
 import pickle
 import datetime
@@ -15,7 +16,14 @@ from hpcscripts.sharedutils.nomalization import *
 from hpcscripts.option import pathhandler as ph
 from hpcscripts.option import globalparams as G_PARAMS
 
+def SetLowTFVerbose():
+    tf.get_logger().setLevel('ERROR')
+
+
 def run():
+    SetLowTFVerbose()
+    print ("--------------------")
+    print ("----Begin Training Process")
 
     # Import Data
     train_data, test_data, eval_data = ImportTrainingData()
@@ -30,8 +38,13 @@ def run():
     # Create Feature Column
     feature_layer = CreateFeatureLayer()
 
+    print ("features ready..")
+
     # Create ANN Model
     model = CreateANNModel(feature_layer)
+
+    print ("model ready..")
+    print ("begin training..\n")
 
     # Train Model
     history = TrainModel(
@@ -43,6 +56,7 @@ def run():
 
     # Save Model and Training history
     SaveModel(model, history)
+    print ("---------------------------------------------")
 
 
 

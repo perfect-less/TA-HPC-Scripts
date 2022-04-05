@@ -25,7 +25,7 @@ def log_result(retval):
 
 def CleaningWork(func, p_num, filepath, lname = "Sampling"):
 
-    print("[*]============Starting {} Process".format(lname))
+    print("Starting {} Process".format(lname))
 
     start_time = time.time()
 
@@ -44,7 +44,7 @@ def CleaningWork(func, p_num, filepath, lname = "Sampling"):
     work_time = end_time - start_time
 
     print ("[V]{} process took ".format(lname) + str(work_time) + " seconds to complete")
-    print ("---------------------------------------------")
+    print ("--------------------")
 
     return []
 

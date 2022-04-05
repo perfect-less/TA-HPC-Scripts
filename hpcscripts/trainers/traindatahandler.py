@@ -60,4 +60,5 @@ def run ():
             file.to_csv(join(write_dir, "Eval_set.csv"), mode=mo, header=hd, index=False)
 
         
-    print ("------Train, test, and eval set created------")
+    print ("Train, test, and eval set created")
+    print ("---------------------------------------------")

@@ -22,7 +22,7 @@ def run ():
     write_dir = ph.GetProcessedPath("Selected")
     flight_files = GetFilesName(read_dir)
 
-    unusable_indexes = ()
+    unusable_indexes = []
 
     # Read Files to List of DataFrames
     flight_DFs = ReadFiles(flight_files, read_dir)
@@ -83,13 +83,17 @@ def GatherUnusableBasedOnGSAndLocalizer(flight_DFs: List[pd.DataFrame], unusable
     unusable_count = 0
 
     for i, flight_DF in enumerate(flight_DFs):
+        if i in unusable_indexes:
+            continue
+
         flight_DF['loc_dev_ddm'].replace('', np.nan, inplace=True)
+        flight_DF['lat_rad'].replace('', np.nan, inplace=True)
 
         if (flight_DF.lat_rad.max() > 35.047973 * deg2rad):
             unusable_indexes.append(i)
             unusable_count += 1
 
-        if (flight_DF.loc[flight_DF["lat_rad"].shape[0]-1, "lat_rad"] < 35.012 * deg2rad):
+        if (flight_DF.loc[flight_DF.shape[0]-1, "lat_rad"] < 35.012 * deg2rad):
             unusable_indexes.append(i)
             unusable_count += 1
 
