@@ -1,6 +1,8 @@
 """This module is responsible for creating ANN model and train it based on configuration"""
 
 import os
+import pickle
+import datetime
 from typing import List
 
 import pandas as pd
@@ -16,13 +18,14 @@ from hpcscripts.option import globalparams as G_PARAMS
 def run():
 
     # Import Data
-    train_data, test_data = ImportTrainingData()
+    train_data, test_data, eval_data = ImportTrainingData()
 
     # Pre-process Data
-    train_data, test_data, norm_param = PreProcessData(train_data, test_data)
-    ready_data = ToTFReadyFeatureAndLabel(train_data, test_data)
+    train_data, test_data, eval_data, norm_param = PreProcessData(train_data, test_data, eval_data)
+    ready_data = ToTFReadyFeatureAndLabel(train_data, test_data, eval_data)
     train_features, train_labels = ready_data[0]
     test_features, test_labels =   ready_data[1]
+    eval_features, eval_labels =   ready_data[2]
 
     # Create Feature Column
     feature_layer = CreateFeatureLayer()
@@ -31,10 +34,15 @@ def run():
     model = CreateANNModel(feature_layer)
 
     # Train Model
-    history = TrainModel(model, (train_features, train_labels)) # (eval_features, eval_labels)
+    history = TrainModel(
+        model, 
+        (train_features, train_labels), 
+        (eval_features, eval_labels),
+        epochs=G_PARAMS.TRAIN_EPOCHS
+    )
 
     # Save Model and Training history
-    SaveModel(model)
+    SaveModel(model, history)
 
 
 
@@ -42,26 +50,32 @@ def run():
 def ImportTrainingData():
     train_file = os.path.join(ph.GetProcessedPath("Ready"), "Train_set.csv")
     test_file  = os.path.join(ph.GetProcessedPath("Ready"), "Test_set.csv")
+    eval_file  = os.path.join(ph.GetProcessedPath("Ready"), "Eval_set.csv")
 
     train_data = pd.read_csv(train_file)
     test_data  = pd.read_csv(test_file)
+    eval_data  = pd.read_csv(eval_file)
 
-    return train_data, test_data
+    return train_data, test_data, eval_data
 
-def PreProcessData(train_data: pd.DataFrame, test_data: pd.DataFrame):
+def PreProcessData(train_data: pd.DataFrame, test_data: pd.DataFrame, eval_data: pd.DataFrame):
     train_data, norm_param = DF_Nomalize(train_data)
     test_data = DF_Nomalize(test_data, norm_param)
+    eval_data = DF_Nomalize(eval_data, norm_param)
 
-    return train_data, test_data, norm_param
+    return train_data, test_data, eval_data, norm_param
 
-def ToTFReadyFeatureAndLabel(train_data, test_data):
+def ToTFReadyFeatureAndLabel(train_data, test_data, eval_data):
+    training_labels = G_PARAMS.SEQUENTIAL_LABELS
 
-    train_features, train_label = SplitDataFrame(train_data)
-    test_features, test_label = SplitDataFrame(test_data)
+    train_features, train_label = SplitDataFrame(train_data, training_labels)
+    test_features, test_label = SplitDataFrame(test_data, training_labels)
+    eval_features, eval_label = SplitDataFrame(eval_data, training_labels)
 
     return (
         (train_features, train_label), 
-        (test_features, test_label)
+        (test_features, test_label),
+        (eval_features, eval_label)
     )
 
 def SplitDataFrame(df: pd.DataFrame, labels):
@@ -136,7 +150,7 @@ def CreateANNModel(feature_layer):
 
     return model
 
-def CreateSequentialModel(feature_layer, hidden_layer_conf: List[int], activation, loss):
+def CreateSequentialModel(feature_layer, hidden_layer_conf: List[int], activation):
 
     # Create a sequential model
     model = keras.models.Sequential()
@@ -171,6 +185,16 @@ def TrainModel(model, training_data, eval_data, epochs=10):
 
     return history
 
-def SaveModel(model: keras.Model):
-    model_directory = os.path.join (ph.GetModelsPath(), "")
+def SaveModel(model: keras.Model, history):
+    """Save both model and history"""
+    folder_name = "ANN " + str (datetime.datetime.now())[:-7]
+    model_directory = os.path.join (ph.GetModelsPath(), folder_name)
+    history_file = os.path.join(model_directory, 'history.pkl')
+
     model.save(model_directory)
+    print ("Model saved to {}".format(model_directory))
+
+    with open(history_file, 'wb') as f:
+        pickle.dump(history.history, f)
+    print ("Model history saved to {}".format(history_file))
+

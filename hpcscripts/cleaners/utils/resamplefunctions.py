@@ -60,6 +60,9 @@ def ReIndexFlightData(flight_DF, target_frequency: int, touchdown_index, selecte
     selected_columns.append("smooth_hdot_mps")
     selected_columns.append("delta_smooth_hdot_mps")
 
+    # remove duplicates
+    selected_columns = list (set(selected_columns))
+
     flight_DF = pd.DataFrame( flight_DF.loc[i_list, selected_columns] )
     flight_DF.reset_index(drop=True, inplace=True)
 

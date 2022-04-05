@@ -22,7 +22,7 @@ def main ():
     traindatahandler.run()
 
     # Post process and evaluate model
-    # anntrainer.run()
+    anntrainer.run()
 
     print ("Done")
 
