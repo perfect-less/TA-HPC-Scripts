@@ -124,6 +124,7 @@ train_epochs = 50
 label_name = ['elv_l_rad'] #['elv_l_rad', 'N1s_rpm'] #['N1s_rpm']
 #label_name = ['elv_l_rad', 'N1s_rpm' , 'flap_te_pos']
 
+# convert data into dictionary
 features = {name:np.array(value) for name, value in train_data.items()}
 #label = np.array(features.pop('N1s_rpm'))
 label = np.array(features.pop('elv_l_rad'))

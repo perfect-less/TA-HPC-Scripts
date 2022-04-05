@@ -1,5 +1,11 @@
 from math import pi
 
+# NEURAL NETWORK
+ACTIVATION = 'relu'
+LOSS = 'mean_squared_error'
+SEQUENTIAL_HIDDENLAYERS = [50, 30]
+SEQUENTIAL_LABELS = ['elv_l_rad']
+
 # PROCESSING 
 DATAPROCESSING_POOL = 4
 

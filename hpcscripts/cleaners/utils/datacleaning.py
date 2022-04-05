@@ -58,11 +58,11 @@ def CleanAndCompleteData(fname):
     flight_DF = pd.read_csv("{readdir}/{fname}".format(readdir= read_dir, fname= fname))
     
 
-    # Process each column that needed to be processed
+    # Process (deleting outliars and filtering) each column that needed to be processed
     flight_DF = CleanColumns(flight_DF)
     
 
-    # Calculate glide slope and glide slope error
+    # Calculate 'glide' slope and 'glide slope error'
     hdotd_np = flight_DF["hdot_2_mps"].to_numpy()
     gs_np = flight_DF["gs_mps"].to_numpy()
 
@@ -71,10 +71,10 @@ def CleanAndCompleteData(fname):
     flight_DF = pd.concat( [flight_DF, pd.DataFrame(gamma_np, columns=["gamma_rad"])], axis=1)
     flight_DF["gamma_error_rad"] = target_gamma - flight_DF["gamma_rad"]
 
-    # Calculate delta between theta and theta_trim
+    # Calculate delta between 'theta' and 'theta_trim'
     flight_DF["theta_del_rad"] = flight_DF["theta_rad"] - flight_DF["theta_trim_rad"]
 
-    # Calculate average N1 and flap position    
+    # Calculate average 'N1' and 'flap position'    
     flight_DF["N1s_rpm"] = (flight_DF["n11_rpm"] + flight_DF["n12_rpm"] + flight_DF["n13_rpm"] + flight_DF["n14_rpm"]) / 4
     flight_DF["flap_te_pos"] = flight_DF["flap_te_pos"] / 100
     

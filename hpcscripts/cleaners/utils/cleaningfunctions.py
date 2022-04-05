@@ -13,8 +13,7 @@ def CleanColumns(flight_DF):
     left_alone_list = G_PARAMS.LEFT_ALONE_LIST
 
     for column_name in column_list:
-        movingAverageWin = 0
-        #movingAverageWin = 50
+        movingAverageWin = 0 # 50
 
         if not G_PARAMS.SKIP_FILTER_PROCESS:
 
@@ -27,6 +26,7 @@ def CleanColumns(flight_DF):
                 # Just Delete all the out of range elevator param.
                 flight_DF.loc[ (flight_DF[column_name]) < 50 * math.pi / 180 , column_name ] = None
                 
+
             flight_DF[column_name] = flight_DF[column_name].interpolate()
 
 
