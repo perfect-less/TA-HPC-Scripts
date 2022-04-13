@@ -1,9 +1,6 @@
 """This module is responsible for creating ANN model and train it based on configuration"""
 
-import logging
 import os
-import pickle
-import datetime
 from typing import List
 
 import pandas as pd
@@ -13,11 +10,9 @@ import tensorflow as tf
 from tensorflow.python.keras.api import keras
 
 from hpcscripts.sharedutils.nomalization import *
+from hpcscripts.sharedutils.trainingutils import *
 from hpcscripts.option import pathhandler as ph
 from hpcscripts.option import globalparams as G_PARAMS
-
-def SetLowTFVerbose():
-    tf.get_logger().setLevel('ERROR')
 
 
 def run():
@@ -51,6 +46,7 @@ def run():
         model, 
         (train_features, train_labels), 
         (eval_features, eval_labels),
+        G_PARAMS.CALLBACKS,
         epochs=G_PARAMS.TRAIN_EPOCHS
     )
 
@@ -92,26 +88,7 @@ def ToTFReadyFeatureAndLabel(train_data, test_data, eval_data):
         (eval_features, eval_label)
     )
 
-def SplitDataFrame(df: pd.DataFrame, labels):
-    """Split DataFrames into feature dictionary and labels array.
-    We do this because TensorFlow accept this formating."""
 
-    feature_dict = {name:np.array(value) for name, value in df.items()}
-
-    for i, label_name in enumerate(labels):
-        if i == 0:
-            label_array = feature_dict.pop(label_name)
-            continue
-
-        label_array = np.stack(
-            (
-                label_array, 
-                np.array(feature_dict.pop(label_name))
-            )
-        )
-
-    label_array = np.transpose(label_array)
-    return feature_dict, label_array
 
 def CreateFeatureLayer():
     feature_columns = []
@@ -159,7 +136,7 @@ def CreateANNModel(feature_layer):
     # Compile our model
     model.compile(optimizer=keras.optimizers.Adam(name='Adam'),
                 loss=G_PARAMS.LOSS,
-                metrics=[keras.metrics.MeanSquaredError()]
+                metrics=G_PARAMS.METRICS
                 )
 
     return model
@@ -182,33 +159,4 @@ def CreateSequentialModel(feature_layer, hidden_layer_conf: List[int], activatio
     model.add(keras.layers.Dense(units=len(G_PARAMS.SEQUENTIAL_LABELS)))
 
     return model
-
-def TrainModel(model, training_data, eval_data, epochs=10):
-
-    train_features, train_labels = training_data
-    eval_features, eval_labels = eval_data
-    
-    early_stop = keras.callbacks.EarlyStopping(monitor='val_loss',patience=3)
-    history = model.fit(
-        train_features, 
-        train_labels, 
-        epochs=epochs, 
-        validation_data=(eval_features, eval_labels),
-        callbacks=[early_stop]
-    )
-
-    return history
-
-def SaveModel(model: keras.Model, history):
-    """Save both model and history"""
-    folder_name = "ANN " + str (datetime.datetime.now())[:-7]
-    model_directory = os.path.join (ph.GetModelsPath(), folder_name)
-    history_file = os.path.join(model_directory, 'history.pkl')
-
-    model.save(model_directory)
-    print ("Model saved to {}".format(model_directory))
-
-    with open(history_file, 'wb') as f:
-        pickle.dump(history.history, f)
-    print ("Model history saved to {}".format(history_file))
 

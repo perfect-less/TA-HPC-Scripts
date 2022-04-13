@@ -70,6 +70,10 @@ def GatherEmptyElevatorIndexes(flight_DFs: List[pd.DataFrame], unusable_indexes:
         if flight_DF.shape[0] == 0:
             unusable_indexes.append(i)
             empty_count += 1
+        
+        if flight_DF.shape[0] < 200: # temp
+            unusable_indexes.append(i)
+            empty_count += 1
             
         if flight_DF.shape[0] > 0 and np.isnan(flight_DF.loc[random.randint(0, flight_DF.shape[0]-1) , "elv_l_rad"]):
             unusable_indexes.append(i)

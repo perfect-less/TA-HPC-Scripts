@@ -1,11 +1,20 @@
 from math import pi
+from tensorflow.python.keras.api import keras
+
+# DEFINITION
+early_stop = keras.callbacks.EarlyStopping(monitor='val_loss',patience=3)
 
 # NEURAL NETWORK
 ACTIVATION = 'relu'
 LOSS = 'mean_squared_error'
+METRICS = [
+            keras.metrics.MeanSquaredError(), 
+            keras.metrics.MeanAbsoluteError()
+        ]
 SEQUENTIAL_HIDDENLAYERS = [50, 30]
 SEQUENTIAL_LABELS = ['elv_l_rad']
-TRAIN_EPOCHS = 10
+CALLBACKS = [early_stop]
+TRAIN_EPOCHS = 20
 
 # PROCESSING 
 DATAPROCESSING_POOL = 4
