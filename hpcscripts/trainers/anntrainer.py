@@ -11,6 +11,7 @@ from tensorflow.python.keras.api import keras
 
 from hpcscripts.sharedutils.nomalization import *
 from hpcscripts.sharedutils.trainingutils import *
+from hpcscripts.trainers.windowmanager import WindowGenerator
 from hpcscripts.option import pathhandler as ph
 from hpcscripts.option import globalparams as G_PARAMS
 
@@ -21,22 +22,18 @@ def run():
     print ("----Begin Training Process")
 
     # Import Data
-    train_data, test_data, eval_data = ImportTrainingData()
+    train_comb= ImportCombinedTrainingData()
 
     # Pre-process Data
-    train_data, test_data, eval_data, norm_param = PreProcessData(train_data, test_data, eval_data)
-    ready_data = ToTFReadyFeatureAndLabel(train_data, test_data, eval_data)
-    train_features, train_labels = ready_data[0]
-    test_features, test_labels =   ready_data[1]
-    eval_features, eval_labels =   ready_data[2]
+    train_comb, norm_param = DF_Nomalize(train_comb)
+    train_list, test_list, eval_list = GetFileList()
 
-    # Create Feature Column
-    feature_layer = CreateFeatureLayer()
-
-    print ("features ready..")
+    # Create WindowGenerator
+    windowG = CreateWindowGenerator(train_list, 
+                    test_list, eval_list, norm_param)
 
     # Create ANN Model
-    model = CreateANNModel(feature_layer)
+    model = CreateANNModel()
 
     print ("model ready..")
     print ("begin training..\n")
@@ -44,8 +41,8 @@ def run():
     # Train Model
     history = TrainModel(
         model, 
-        (train_features, train_labels), 
-        (eval_features, eval_labels),
+        windowG.train, 
+        windowG.val,
         G_PARAMS.CALLBACKS,
         epochs=G_PARAMS.TRAIN_EPOCHS
     )
@@ -57,39 +54,76 @@ def run():
 
 
 
-def ImportTrainingData():
-    train_file = os.path.join(ph.GetProcessedPath("Ready"), "Train_set.csv")
-    test_file  = os.path.join(ph.GetProcessedPath("Ready"), "Test_set.csv")
-    eval_file  = os.path.join(ph.GetProcessedPath("Ready"), "Eval_set.csv")
-
+def ImportCombinedTrainingData():
+    train_file = os.path.join(ph.GetProcessedPath("Combined"), "Train_set.csv")
     train_data = pd.read_csv(train_file)
-    test_data  = pd.read_csv(test_file)
-    eval_data  = pd.read_csv(eval_file)
 
-    return train_data, test_data, eval_data
+    return train_data
 
-def PreProcessData(train_data: pd.DataFrame, test_data: pd.DataFrame, eval_data: pd.DataFrame):
-    train_data, norm_param = DF_Nomalize(train_data)
-    test_data = DF_Nomalize(test_data, norm_param)
-    eval_data = DF_Nomalize(eval_data, norm_param)
+def GetFileList():
+    train_dir = ph.GetProcessedPath("Train")
+    test_dir  = ph.GetProcessedPath("Test")
+    eval_dir  = ph.GetProcessedPath("Eval")
 
-    return train_data, test_data, eval_data, norm_param
+    train_list = os.listdir(train_dir)
+    test_list  = os.listdir(test_dir)
+    eval_list  = os.listdir(eval_dir)
 
-def ToTFReadyFeatureAndLabel(train_data, test_data, eval_data):
-    training_labels = G_PARAMS.SEQUENTIAL_LABELS
+    for i, train_file in enumerate (train_list):
+        train_list[i] = os.path.join(train_dir, train_file)
 
-    train_features, train_label = SplitDataFrame(train_data, training_labels)
-    test_features, test_label = SplitDataFrame(test_data, training_labels)
-    eval_features, eval_label = SplitDataFrame(eval_data, training_labels)
+    for i, test_file in enumerate (test_list):
+        test_list[i] = os.path.join(test_dir, test_file)
 
-    return (
-        (train_features, train_label), 
-        (test_features, test_label),
-        (eval_features, eval_label)
-    )
+    for i, eval_file in enumerate (eval_list):
+        eval_list[i] = os.path.join(eval_dir, eval_file)
+
+    return train_list, test_list, eval_list
+
+def CreateWindowGenerator(train_list, test_list, eval_list, norm_param:dict):
+    windowG = WindowGenerator(
+
+            input_width=G_PARAMS.INPUT_WINDOW_WIDTH,
+            label_width=G_PARAMS.LABEL_WINDOW_WIDTH,
+            shift=G_PARAMS.LABEL_SHIFT,
+            
+            train_list=train_list,
+            test_list=test_list,
+            val_list=eval_list,
+            
+            norm_param=norm_param,
+            label_columns=G_PARAMS.SEQUENTIAL_LABELS,
+            
+            shuffle_train=True,
+            print_check=False
+
+                )
+    return windowG
+
+
+def CreateANNModel():
+    """Create and Compile Model"""
+    # Get Model Definition from Global Param
+    model = G_PARAMS.MODEL
+    
+    # Add output layer
+    model.add(keras.layers.Dense(units=len(G_PARAMS.SEQUENTIAL_LABELS)))
+
+    # Compile our model
+    model.compile(optimizer=G_PARAMS.OPTIMIZER,
+                loss=G_PARAMS.LOSS,
+                metrics=G_PARAMS.METRICS
+                )
+
+    return model
 
 
 
+
+
+## ======================================================================
+## DEPRECATED, DEPRECATED, DEPRECATED, DEPRECATED, DEPRECATED, DEPRECATED
+## ======================================================================
 def CreateFeatureLayer():
     feature_columns = []
 
@@ -124,39 +158,22 @@ def CreateFeatureLayer():
     feature_layer = keras.layers.DenseFeatures(feature_columns)
     return feature_layer
 
-def CreateANNModel(feature_layer):
-    """Create and Compile Model"""
-    # Create Model
-    model = CreateSequentialModel(
-        feature_layer,
-        G_PARAMS.SEQUENTIAL_HIDDENLAYERS,
-        G_PARAMS.ACTIVATION
+def ToTFReadyFeatureAndLabel(train_data, test_data, eval_data):
+    training_labels = G_PARAMS.SEQUENTIAL_LABELS
+
+    train_features, train_label = SplitDataFrame(train_data, training_labels)
+    test_features, test_label = SplitDataFrame(test_data, training_labels)
+    eval_features, eval_label = SplitDataFrame(eval_data, training_labels)
+
+    return (
+        (train_features, train_label), 
+        (test_features, test_label),
+        (eval_features, eval_label)
     )
 
-    # Compile our model
-    model.compile(optimizer=keras.optimizers.Adam(name='Adam'),
-                loss=G_PARAMS.LOSS,
-                metrics=G_PARAMS.METRICS
-                )
+def PreProcessData(train_data: pd.DataFrame, test_data: pd.DataFrame, eval_data: pd.DataFrame):
+    train_data, norm_param = DF_Nomalize(train_data)
+    test_data = DF_Nomalize(test_data, norm_param)
+    eval_data = DF_Nomalize(eval_data, norm_param)
 
-    return model
-
-def CreateSequentialModel(feature_layer, hidden_layer_conf: List[int], activation):
-
-    # Create a sequential model
-    model = keras.models.Sequential()
-
-    # Create input layer
-    model.add(feature_layer)
-
-    for nodes_count in hidden_layer_conf:
-        model.add(keras.layers.Dense(
-                            units=nodes_count,
-                            activation=activation
-                        ))
-
-    # Create output layer
-    model.add(keras.layers.Dense(units=len(G_PARAMS.SEQUENTIAL_LABELS)))
-
-    return model
-
+    return train_data, test_data, eval_data, norm_param

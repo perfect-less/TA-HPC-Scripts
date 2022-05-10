@@ -11,58 +11,37 @@ from tensorflow.python.keras.api import keras
 from hpcscripts.option import pathhandler as ph
 from hpcscripts.option import globalparams as G_PARAMS
 from hpcscripts.sharedutils.nomalization import DF_Nomalize
+from hpcscripts.trainers.windowmanager import WindowGenerator
 
 
 def SetLowTFVerbose():
     tf.get_logger().setLevel('ERROR')
 
-def SplitDataFrame(df: pd.DataFrame, labels):
-    """Split DataFrames into feature dictionary and labels array.
-    We do this because TensorFlow accept this formating."""
-
-    feature_dict = {name:np.array(value) for name, value in df.items()}
-
-    for i, label_name in enumerate(labels):
-        if i == 0:
-            label_array = feature_dict.pop(label_name)
-            continue
-
-        label_array = np.stack(
-            (
-                label_array, 
-                np.array(feature_dict.pop(label_name))
-            )
-        )
-
-    label_array = np.transpose(label_array)
-    return feature_dict, label_array
-
 def TrainModel(model, training_data, eval_data, callbacks, epochs=10):
-
-    train_features, train_labels = training_data
-    eval_features, eval_labels = eval_data
     
     history = model.fit(
-        train_features, 
-        train_labels, 
-        epochs=epochs, 
-        validation_data=(eval_features, eval_labels),
+        training_data,
+        epochs=epochs,
+        validation_data=eval_data,
         callbacks=callbacks
     )
 
     return history
 
-def MakeSinglePrediction(csvfile_path: str, model: keras.Model, labels, norm_param=None):
+def MakeSinglePrediction(csvfile_path: str, 
+                        model: keras.Model, 
+                        labels, 
+                        window: WindowGenerator=None):
     
-    test_df = pd.read_csv(csvfile_path)
-    if not norm_param == None:
-        test_df = DF_Nomalize(test_df, norm_param)
+    ds = window.make_dataset([csvfile_path], batch_size=None)
+    features, labels = next(iter(ds))
+    
+    predictions = model.predict(features)
 
-    test_features, test_label = SplitDataFrame(test_df, labels)
-    predictions = model.predict(test_features)
-    predictions = np.transpose(predictions)
+    _rows = predictions.shape[0]
+    predictions = predictions.reshape(predictions.shape[0], len(G_PARAMS.SEQUENTIAL_LABELS))
     
-    return test_df, predictions
+    return predictions
 
 def SaveModel(model: keras.Model, history):
     """Save both model and history"""
@@ -89,3 +68,30 @@ def LoadModel(path_to_model):
 
     return model, history
 
+
+
+
+
+## ======================================================================
+## DEPRECATED, DEPRECATED, DEPRECATED, DEPRECATED, DEPRECATED, DEPRECATED
+## ======================================================================
+def SplitDataFrame(df: pd.DataFrame, labels):
+    """Split DataFrames into feature dictionary and labels array.
+    We do this because TensorFlow accept this formating."""
+
+    feature_dict = {name:np.array(value) for name, value in df.items()}
+
+    for i, label_name in enumerate(labels):
+        if i == 0:
+            label_array = feature_dict.pop(label_name)
+            continue
+
+        label_array = np.stack(
+            (
+                label_array, 
+                np.array(feature_dict.pop(label_name))
+            )
+        )
+
+    label_array = np.transpose(label_array)
+    return feature_dict, label_array
