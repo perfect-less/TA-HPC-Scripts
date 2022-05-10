@@ -13,13 +13,21 @@ import numpy as np
 from hpcscripts.sharedutils.fileprocessing import GetFilesName
 from hpcscripts.option import pathhandler as ph
 
+def copy_datafile(read_dir, to_dir, flight_file):
+    """Copy flight_file from read_dir to to_dir"""
+    origin = join(read_dir, flight_file)
+    target = join(to_dir,   flight_file)
+
+    shutil.copyfile(origin, target)
 
 def run ():
     print ("------Start Creating Data Set------")
 
-    read_dir      = ph.GetProcessedPath("Selected")
-    write_dir     = ph.GetProcessedPath("Ready")
-    test_file_dir = ph.GetProcessedPath("Test")
+    read_dir       = ph.GetProcessedPath("Selected")
+    write_dir      = ph.GetProcessedPath("Combined")
+    train_file_dir = ph.GetProcessedPath("Train")
+    test_file_dir  = ph.GetProcessedPath("Test")
+    eval_file_dir  = ph.GetProcessedPath("Eval")
 
     flight_files = GetFilesName(read_dir, False)
 
@@ -46,19 +54,29 @@ def run ():
             hd = True
             mo = 'w'
             
-        # Write Into One CSV.
+        # Write Into One CSV. Also copy to each folder
         if i < train_count:
             file.to_csv(join(write_dir, "Train_set.csv"), mode=mo, header=hd, index=False)
+            copy_datafile(
+                            read_dir, train_file_dir,
+                            flight_files[ind[i]]
+                        )
+
         elif i < (train_count + test_count):
             file.to_csv(join(write_dir, "Test_set.csv"), mode=mo, header=hd, index=False)
+            copy_datafile(
+                            read_dir, test_file_dir,
+                            flight_files[ind[i]]
+                        )
 
-            origin = join(read_dir,      flight_files[ind[i]])
-            target = join(test_file_dir, flight_files[ind[i]])
-
-            shutil.copyfile(origin, target)
         else:
             file.to_csv(join(write_dir, "Eval_set.csv"), mode=mo, header=hd, index=False)
+            copy_datafile(
+                            read_dir, eval_file_dir,
+                            flight_files[ind[i]]
+                        )
 
         
     print ("Train, test, and eval set created")
     print ("---------------------------------------------")
+

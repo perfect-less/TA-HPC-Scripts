@@ -59,5 +59,8 @@ DATA_DIRECORIES = [
         "Data/Processed/Cleaned",
         "Data/Processed/Selected",
         "Data/Processed/Ready",
-        "Data/Processed/Test"
+        "Data/Processed/Combined",
+        "Data/Processed/Train",
+        "Data/Processed/Test",
+        "Data/Processed/Eval"
     ]
