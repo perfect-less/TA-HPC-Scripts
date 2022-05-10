@@ -1,24 +1,36 @@
 from math import pi
 from tensorflow.python.keras.api import keras
 
+from hpcscripts.trainers.modeldefinitions import Linear, Conv
+
 # DEFINITION
 early_stop = keras.callbacks.EarlyStopping(monitor='val_loss',patience=3)
 
 # NEURAL NETWORK
+OPTIMIZER = 'adam'
 ACTIVATION = 'relu'
 LOSS = 'mean_squared_error'
 METRICS = [
             keras.metrics.MeanSquaredError(), 
             keras.metrics.MeanAbsoluteError()
         ]
-SEQUENTIAL_HIDDENLAYERS = [50, 30]
 FEATURE_COLUMNS = ["hralt_m", "theta_rad", "aoac_rad", "cas_mps"]
 SEQUENTIAL_LABELS = ['elv_l_rad']
 CALLBACKS = [early_stop]
 TRAIN_EPOCHS = 20
 
+# MODEL DEFINITION
+# See modeldefinitions.py in trainers folder
+MODEL = Linear() 
+SEQUENTIAL_HIDDENLAYERS = [50, 30]
+
 # PROCESSING 
 DATAPROCESSING_POOL = 4
+
+# WINDOW GENERATOR
+INPUT_WINDOW_WIDTH = 1
+LABEL_WINDOW_WIDTH = 1
+LABEL_SHIFT = 0
 
 # CLEANING AND RESAMPLING
 TARGET_GAMMA = -3 * pi / 180
