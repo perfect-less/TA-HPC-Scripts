@@ -12,6 +12,7 @@ METRICS = [
             keras.metrics.MeanAbsoluteError()
         ]
 SEQUENTIAL_HIDDENLAYERS = [50, 30]
+FEATURE_COLUMNS = ["hralt_m", "theta_rad", "aoac_rad", "cas_mps"]
 SEQUENTIAL_LABELS = ['elv_l_rad']
 CALLBACKS = [early_stop]
 TRAIN_EPOCHS = 20
