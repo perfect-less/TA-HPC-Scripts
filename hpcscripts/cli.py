@@ -19,6 +19,7 @@ def main ():
     # Initialize Program
     pathhandler.InitDataDirectories()
 
+
     # # Clean Raw Data to CSV
     # cleantocsv.run (G_PARAMS.DATAPROCESSING_POOL)
     
@@ -29,7 +30,7 @@ def main ():
     # traindatahandler.run()
 
     # Post process and evaluate model
-    anntrainer.run()
+    # anntrainer.run()
     rsquared.run()
 
     # Runtime related calculation

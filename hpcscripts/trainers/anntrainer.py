@@ -7,7 +7,7 @@ import pandas as pd
 import numpy as np
 
 import tensorflow as tf
-from tensorflow.python.keras.api import keras
+from tensorflow import keras
 
 from hpcscripts.sharedutils.nomalization import *
 from hpcscripts.sharedutils.trainingutils import *
@@ -79,26 +79,6 @@ def GetFileList():
         eval_list[i] = os.path.join(eval_dir, eval_file)
 
     return train_list, test_list, eval_list
-
-def CreateWindowGenerator(train_list, test_list, eval_list, norm_param:dict):
-    windowG = WindowGenerator(
-
-            input_width=G_PARAMS.INPUT_WINDOW_WIDTH,
-            label_width=G_PARAMS.LABEL_WINDOW_WIDTH,
-            shift=G_PARAMS.LABEL_SHIFT,
-            
-            train_list=train_list,
-            test_list=test_list,
-            val_list=eval_list,
-            
-            norm_param=norm_param,
-            label_columns=G_PARAMS.SEQUENTIAL_LABELS,
-            
-            shuffle_train=True,
-            print_check=False
-
-                )
-    return windowG
 
 
 def CreateANNModel():

@@ -14,16 +14,18 @@ def ListModels(models_directory: str):
 def SelectModelPrompt(models_directory):
 
     models_list = ListModels(models_directory)
+    models_list.sort()
 
     print ("Found {} models inside {}:".format(
                                         len(models_list), 
                                         models_directory
                                     ))
     
-    print ("index \tModel-name")
+    print ("index    Model-name")
     for i, models_path in enumerate(models_list):
-        print ("  [{}]. \t{}".format(
-                            i, 
+        number = "[{}]. ".format(i).ljust(7, " ")
+        print ("  {}{}".format(
+                            number, 
                             os.path.basename (models_path)
                         ))
     index = input("Please input your model's index (e.g 0): ")

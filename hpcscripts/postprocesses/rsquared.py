@@ -4,9 +4,9 @@ from typing import List
 
 import numpy as np
 import pandas as pd
-from tensorflow.python.keras.api import keras
+from tensorflow import keras
 
-from hpcscripts.sharedutils.trainingutils import LoadModel, SetLowTFVerbose, MakeSinglePrediction
+from hpcscripts.sharedutils.trainingutils import LoadModel, SetLowTFVerbose, MakeSinglePrediction, CreateWindowGenerator
 from hpcscripts.sharedutils.nomalization import DF_Nomalize
 from hpcscripts.sharedutils.modelutils import SelectModelPrompt
 from hpcscripts.option import pathhandler as ph
@@ -18,15 +18,19 @@ def CalculateRSquared(test_files: List[str], model: keras.Model, norm_param):
     labels = G_PARAMS.SEQUENTIAL_LABELS
     r2_list = []
     columns = ["filename"] + labels
+    windowG = CreateWindowGenerator(
+                    train_list=test_files,
+                    test_list=None, eval_list=None,
+                    norm_param=norm_param
+    )
 
     print ("calculating r2")
 
     for i, test_file in enumerate(test_files):
         test_df, predictions = MakeSinglePrediction(
-                test_file, 
-                model, 
-                labels,
-                norm_param
+                csvfile_path=test_file, 
+                model=model, 
+                window=windowG
             )
         
         row_list = [os.path.basename(test_file)]
@@ -47,7 +51,7 @@ def run():
     SetLowTFVerbose()
 
     # Get Training Data to calculate norm param
-    train_file = os.path.join(ph.GetProcessedPath("Ready"), "Train_set.csv")
+    train_file = os.path.join(ph.GetProcessedPath("Combined"), "Train_set.csv")
     train_data, norm_param = DF_Nomalize(pd.read_csv(train_file))
     
     model_path = SelectModelPrompt(ph.GetModelsPath())

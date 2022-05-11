@@ -6,7 +6,7 @@ import pandas as pd
 import numpy as np
 
 import tensorflow as tf
-from tensorflow.python.keras.api import keras
+from tensorflow import keras
 
 from hpcscripts.option import pathhandler as ph
 from hpcscripts.option import globalparams as G_PARAMS
@@ -28,9 +28,28 @@ def TrainModel(model, training_data, eval_data, callbacks, epochs=10):
 
     return history
 
+def CreateWindowGenerator(train_list, test_list, eval_list, norm_param:dict):
+    windowG = WindowGenerator(
+
+            input_width=G_PARAMS.INPUT_WINDOW_WIDTH,
+            label_width=G_PARAMS.LABEL_WINDOW_WIDTH,
+            shift=G_PARAMS.LABEL_SHIFT,
+            
+            train_list=train_list,
+            test_list=test_list,
+            val_list=eval_list,
+            
+            norm_param=norm_param,
+            label_columns=G_PARAMS.SEQUENTIAL_LABELS,
+            
+            shuffle_train=True,
+            print_check=False
+
+                )
+    return windowG
+
 def MakeSinglePrediction(csvfile_path: str, 
                         model: keras.Model, 
-                        labels, 
                         window: WindowGenerator=None):
     
     ds = window.make_dataset([csvfile_path], batch_size=None)
@@ -39,9 +58,9 @@ def MakeSinglePrediction(csvfile_path: str,
     predictions = model.predict(features)
 
     _rows = predictions.shape[0]
-    predictions = predictions.reshape(predictions.shape[0], len(G_PARAMS.SEQUENTIAL_LABELS))
+    predictions = predictions.reshape(_rows, len(G_PARAMS.SEQUENTIAL_LABELS))
     
-    return predictions
+    return DF_Nomalize (pd.read_csv(csvfile_path), window.norm_param), predictions
 
 def SaveModel(model: keras.Model, history):
     """Save both model and history"""
@@ -59,7 +78,8 @@ def SaveModel(model: keras.Model, history):
 def LoadModel(path_to_model):
     """Load Model and optionally it's history as well"""
     history_file = os.path.join(path_to_model, 'history.pkl')
-    model = keras.models.load_model(path_to_model)
+    model = tf.keras.models.load_model(path_to_model)
+    # model = tf.saved_model.load(path_to_model)
     print ("model loaded")
 
     with open(history_file, 'rb') as f:

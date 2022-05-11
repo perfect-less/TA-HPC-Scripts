@@ -1,5 +1,5 @@
 from math import pi
-from tensorflow.python.keras.api import keras
+from tensorflow import keras
 
 from hpcscripts.trainers.modeldefinitions import Linear, Conv
 

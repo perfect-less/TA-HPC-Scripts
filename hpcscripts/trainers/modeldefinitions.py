@@ -1,5 +1,5 @@
 import tensorflow as tf
-from tensorflow.python.keras.api import keras
+from tensorflow import keras
 
 from hpcscripts.option import globalparams as G_PARAMS
 
