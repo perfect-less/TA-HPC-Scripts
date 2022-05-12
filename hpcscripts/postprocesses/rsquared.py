@@ -1,4 +1,5 @@
 """Calculating rsquared for Models in Data direcory"""
+from cgi import test
 import os
 from typing import List
 
@@ -36,7 +37,7 @@ def CalculateRSquared(test_files: List[str], model: keras.Model, norm_param):
         row_list = [os.path.basename(test_file)]
         for j, label in enumerate(labels):
             real_np = test_df[label].to_numpy()
-            pred_np = predictions[j]
+            pred_np = predictions[:, j]
 
             r2 = 1 - np.sum( np.square(real_np-pred_np) )/np.sum( np.square(real_np-np.mean(real_np)) )
             row_list.append(r2)

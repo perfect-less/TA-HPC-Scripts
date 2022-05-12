@@ -60,7 +60,12 @@ def MakeSinglePrediction(csvfile_path: str,
     _rows = predictions.shape[0]
     predictions = predictions.reshape(_rows, len(G_PARAMS.SEQUENTIAL_LABELS))
     
-    return DF_Nomalize (pd.read_csv(csvfile_path), window.norm_param), predictions
+    test_df = DF_Nomalize (pd.read_csv(csvfile_path), window.norm_param)
+    test_df = test_df.iloc[(G_PARAMS.INPUT_WINDOW_WIDTH+G_PARAMS.LABEL_SHIFT-1):, :]
+    # ^ cut test_df so it have the same amount of rows with predictions
+    assert _rows == test_df.shape[0]
+
+    return test_df, predictions
 
 def SaveModel(model: keras.Model, history):
     """Save both model and history"""
