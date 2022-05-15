@@ -20,6 +20,11 @@ def AddDenseHiddenLayer(model):
 # V V  MODEL DEFINITION BEGIN HERE  V V
 # V V -  -  -  -  -  -  -  -  -  -  V V
 
+# Model Definition didn't have to specify 
+# the last layer (output layer) because 
+# the trainers module should have taken 
+# care of that.
+
 ## Multi-step Linear Model with 1 Dense
 def Linear():
     linear = tf.keras.Sequential([
