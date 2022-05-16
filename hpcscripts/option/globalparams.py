@@ -1,7 +1,32 @@
 from math import pi
 from tensorflow import keras
 
-from hpcscripts.trainers.modeldefinitions import Linear, Conv
+from hpcscripts.trainers.modeldefinitions import Conv_CustomHiddenLayer, Linear, Conv
+import hpcscripts.trainers.modeldefinitions as mod_def
+
+def ApplyModelDefinition(model_definition):
+    """Set model inside model_definition as current model and
+    apply its parameter to current settings."""
+    global MODEL, INPUT_WINDOW_WIDTH, LABEL_WINDOW_WIDTH, LABEL_SHIFT, SEQUENTIAL_HIDDENLAYERS
+
+    _param, MODEL = model_definition()
+    _input_window_width, _label_window_width, _label_shift, _seq_hl = _param
+
+    if not _param == None:
+        INPUT_WINDOW_WIDTH = _input_window_width
+        LABEL_WINDOW_WIDTH = _label_window_width
+        LABEL_SHIFT = _label_shift
+
+        if not _seq_hl == None:
+            SEQUENTIAL_HIDDENLAYERS = _seq_hl
+
+
+
+
+
+# V V -  -  -  -  -  -  -  -  -  -  V V
+# V V  GLOBAL PARAMETERS SETTINGS   V V
+# V V -  -  -  -  -  -  -  -  -  -  V V
 
 # DEFINITION
 early_stop = keras.callbacks.EarlyStopping(monitor='val_loss',patience=3)
@@ -19,18 +44,21 @@ SEQUENTIAL_LABELS = ['elv_l_rad']
 CALLBACKS = [early_stop]
 TRAIN_EPOCHS = 20
 
-# MODEL DEFINITION
-# See modeldefinitions.py in trainers folder
-MODEL = Linear() 
-SEQUENTIAL_HIDDENLAYERS = [50, 30]
-
 # PROCESSING 
 DATAPROCESSING_POOL = 4
 
-# WINDOW GENERATOR
+# WINDOW GENERATOR, DEFAULT (CAN BE OVERWRITTEN BY MODEL DEFINITION)
 INPUT_WINDOW_WIDTH = 1
 LABEL_WINDOW_WIDTH = 1
 LABEL_SHIFT = 0
+
+SEQUENTIAL_HIDDENLAYERS = [50, 30]
+USE_RESIDUAL_WRAPPER = True
+
+# MODEL DEFINITION
+# See modeldefinitions.py in trainers folder
+_, MODEL = mod_def.DefaultModelDefinition()
+ApplyModelDefinition(mod_def.DefaultModelDefinition)
 
 # CLEANING AND RESAMPLING
 TARGET_GAMMA = -3 * pi / 180

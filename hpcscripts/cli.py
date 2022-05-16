@@ -26,12 +26,21 @@ def main ():
     # Select usable data
     # flightselector.run()
 
-    # # Create training csv and train data
+    # Create training csv and train data
     # traindatahandler.run()
 
     # Post process and evaluate model
-    # anntrainer.run()
+    anntrainer.run()
     rsquared.run()
+
+    # print ( "G_PARAMS, PARAMS: {}, {}, {}".format (
+    #                     G_PARAMS.INPUT_WINDOW_WIDTH,
+    #                     G_PARAMS.LABEL_WINDOW_WIDTH,
+    #                     G_PARAMS.LABEL_SHIFT
+    #                 ))
+    
+    # print ( "G_PARAMS, MODEL: \n{}".format(G_PARAMS.MODEL))
+    # print ( "G_PARAMS, SEQUENTIAL_HIDDENLAYERS: {}".format(G_PARAMS.SEQUENTIAL_HIDDENLAYERS))
 
     # Runtime related calculation
     exit_time = datetime.datetime.now()

@@ -3,8 +3,26 @@ from tensorflow import keras
 
 from hpcscripts.option import globalparams as G_PARAMS
 
-def AddDenseHiddenLayer(model):
-    hidden_layer_conf = G_PARAMS.SEQUENTIAL_HIDDENLAYERS
+class ResidualWrapper(tf.keras.Model):
+  def __init__(self, model):
+    super().__init__()
+    self.model = model
+
+  def call(self, inputs, *args, **kwargs):
+    delta = self.model(inputs, *args, **kwargs)
+
+    # The prediction for each time step is the input
+    # from the previous time step plus the delta
+    # calculated by the model.
+    return inputs[:, -1, :] + delta
+
+def AddDenseHiddenLayer(model, sequential_hiddenlayers=None):
+    
+    if sequential_hiddenlayers == None:
+        hidden_layer_conf = G_PARAMS.SEQUENTIAL_HIDDENLAYERS
+    else:
+        hidden_layer_conf = sequential_hiddenlayers
+    
     activation = G_PARAMS.ACTIVATION
 
     for nodes_count in hidden_layer_conf:
@@ -25,23 +43,55 @@ def AddDenseHiddenLayer(model):
 # the trainers module should have taken 
 # care of that.
 
+# Each model definition function returns
+# _param and model objects. Set _param as
+# None if you want to use default parameters
+# on globalparams.py
+
 ## Multi-step Linear Model with 1 Dense
 def Linear():
+    _param = None
+    _input_window_width = 1
+    _label_window_width = 1
+    _label_shift        = 0 
+
     linear = tf.keras.Sequential([
         tf.keras.layers.Flatten()
     ])
-    return linear
 
-## Conv. Dense with HiddenLayer
+    _param = (_input_window_width, _label_window_width, _label_shift, None)
+    return _param, linear
+
+## Conv. Dense with Default HiddenLayer
 def Conv():
+    _param = None
+
     conv = tf.keras.Sequential([
         tf.keras.layers.Conv1D(filters=32,
                             kernel_size=(G_PARAMS.INPUT_WINDOW_WIDTH),
                             activation='relu')
     ])
     conv = AddDenseHiddenLayer(conv)
-    return conv
+    return _param, conv
+
+## Conv. Dense with Custom HiddenLayer
+def Conv_CustomHiddenLayer():
+    _param = None
+    _input_window_width  = 5
+    _label_window_width  = 1
+    _label_shift         = 0 
+    _sequential_hidden_l = [40, 40]
+
+    conv = tf.keras.Sequential([
+        tf.keras.layers.Conv1D(filters=32,
+                            kernel_size=(_input_window_width),
+                            activation='relu')
+    ])
+    conv = AddDenseHiddenLayer(conv, _sequential_hidden_l)
+
+    _param = (_input_window_width, _label_window_width, _label_shift, _sequential_hidden_l)
+    return _param, conv
 
 
-
-
+# DefaultModelDefinition
+DefaultModelDefinition = Conv_CustomHiddenLayer

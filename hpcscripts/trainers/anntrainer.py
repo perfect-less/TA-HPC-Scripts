@@ -12,6 +12,7 @@ from tensorflow import keras
 from hpcscripts.sharedutils.nomalization import *
 from hpcscripts.sharedutils.trainingutils import *
 from hpcscripts.trainers.windowmanager import WindowGenerator
+from hpcscripts.trainers.modeldefinitions import ResidualWrapper
 from hpcscripts.option import pathhandler as ph
 from hpcscripts.option import globalparams as G_PARAMS
 
@@ -87,7 +88,15 @@ def CreateANNModel():
     model = G_PARAMS.MODEL
     
     # Add output layer
-    model.add(keras.layers.Dense(units=len(G_PARAMS.SEQUENTIAL_LABELS)))
+    model.add(keras.layers.Dense(
+                    units=len(G_PARAMS.SEQUENTIAL_LABELS)*G_PARAMS.LABEL_WINDOW_WIDTH,
+                    kernel_initializer=tf.initializers.zeros()
+            ))
+    model.add(keras.layers.Reshape([G_PARAMS.LABEL_WINDOW_WIDTH, len (G_PARAMS.SEQUENTIAL_LABELS)]))
+
+    # Apply Resiual Wrapper
+    if G_PARAMS.USE_RESIDUAL_WRAPPER:
+        model = ResidualWrapper(model)
 
     # Compile our model
     model.compile(optimizer=G_PARAMS.OPTIMIZER,
