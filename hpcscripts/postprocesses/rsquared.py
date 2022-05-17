@@ -8,7 +8,7 @@ import pandas as pd
 from tensorflow import keras
 
 from hpcscripts.sharedutils.trainingutils import LoadModel, SetLowTFVerbose, MakeSinglePrediction, CreateWindowGenerator
-from hpcscripts.sharedutils.nomalization import DF_Nomalize
+from hpcscripts.sharedutils.nomalization import DF_Nomalize, denorm
 from hpcscripts.sharedutils.modelutils import SelectModelPrompt
 from hpcscripts.option import pathhandler as ph
 from hpcscripts.option import globalparams as G_PARAMS
@@ -18,7 +18,11 @@ def CalculateRSquared(test_files: List[str], model: keras.Model, norm_param):
     
     labels = G_PARAMS.SEQUENTIAL_LABELS
     r2_list = []
-    columns = ["filename"] + labels
+    columns = ["filename"]
+    for label in labels:
+        for metric in ["r2", "mae", "mse"]:
+            columns.append("{}_{}".format(metric, label))
+
     windowG = CreateWindowGenerator(
                     train_list=test_files,
                     test_list=None, eval_list=None,
@@ -39,8 +43,30 @@ def CalculateRSquared(test_files: List[str], model: keras.Model, norm_param):
             real_np = test_df[label].to_numpy()
             pred_np = predictions[:, j]
 
+            # Calculate R^2
             r2 = 1 - np.sum( np.square(real_np-pred_np) )/np.sum( np.square(real_np-np.mean(real_np)) )
+
+            # Calculate MAE
+            z, s = norm_param[label]
+            real_np = denorm(real_np, z, s)
+            pred_np = denorm(pred_np, z, s)
+            mae = keras.metrics.mean_absolute_error(
+                    real_np,
+                    pred_np
+                )
+            mae = float(mae)
+
+            # Calculate MSE
+            mse = keras.metrics.mean_squared_error(
+                    real_np,
+                    pred_np
+                )
+            mse = float(mse)
+
+            # Apending files r2, MAE, and MSE per label
             row_list.append(r2)
+            row_list.append(mae)
+            row_list.append(mse)
         r2_list.append(row_list)
 
     r2_df = pd.DataFrame(r2_list, columns=columns)
