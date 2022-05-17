@@ -14,7 +14,13 @@ class ResidualWrapper(tf.keras.Model):
     # The prediction for each time step is the input
     # from the previous time step plus the delta
     # calculated by the model.
-    return inputs[:, -1, :] + delta
+    # 
+    # PLEASE NOTED THAT FOR THIS TO WORK, LABELS MUST BE PUT ON THE LAST COLUMNS
+    # eg.
+    # for data with columns: {"alpha", "gamma", "beta", "theta", "lambda"}
+    # if we want "beta" and "gamma" as our label -> ["beta", "gamma"]
+    # then our feature must be ["alpha", "theta", "lambda", "beta", "gamma"]
+    return inputs[:, -(G_PARAMS.LABEL_WINDOW_WIDTH+1):-1, -len(G_PARAMS.SEQUENTIAL_LABELS):] + delta
 
 def AddDenseHiddenLayer(model, sequential_hiddenlayers=None):
     
@@ -79,8 +85,8 @@ def Conv_CustomHiddenLayer():
     _param = None
     _input_window_width  = 5
     _label_window_width  = 1
-    _label_shift         = 0 
-    _sequential_hidden_l = [40, 40]
+    _label_shift         = 0
+    _sequential_hidden_l = [30, 30]
 
     conv = tf.keras.Sequential([
         tf.keras.layers.Conv1D(filters=32,

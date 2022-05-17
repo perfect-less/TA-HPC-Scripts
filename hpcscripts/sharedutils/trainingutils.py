@@ -56,7 +56,7 @@ def MakeSinglePrediction(csvfile_path: str,
     features, labels = next(iter(ds))
     
     predictions = model.predict(features)
-
+    
     _rows = predictions.shape[0]
     predictions = predictions.reshape(_rows, len(G_PARAMS.SEQUENTIAL_LABELS))
     
