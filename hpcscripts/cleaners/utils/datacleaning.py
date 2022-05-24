@@ -29,7 +29,11 @@ def ReSampling(fname):
     # Walk back and cut when the distance to runway is above 10 Nautical Mile
     touchdown_index, trace_index = TraceCutOffPoint(flight_DF, cutOut_distance)
 
-    fparam_np = np.empty([flight_DF.shape[0],1])
+    sampling_freq = 1/flight_DF.loc[1, "time_s"]
+    divider = int (sampling_freq / target_frequency)
+    new_length = int (flight_DF.shape[0]/divider)
+
+    fparam_np = np.empty([new_length,1])
     fparam_np[0,0] = flight_DF.loc[trace_index, "time_s"]
     fparam_np[1,0] = flight_DF.loc[touchdown_index+1, "time_s"] - 50 #15 # minus 15 seconds
 
