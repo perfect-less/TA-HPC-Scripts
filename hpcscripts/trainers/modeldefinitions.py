@@ -20,7 +20,7 @@ class ResidualWrapper(tf.keras.Model):
     # for data with columns: {"alpha", "gamma", "beta", "theta", "lambda"}
     # if we want "beta" and "gamma" as our label -> ["beta", "gamma"]
     # then our feature must be ["alpha", "theta", "lambda", "beta", "gamma"]
-    return inputs[:, -(G_PARAMS.LABEL_WINDOW_WIDTH+1):-1, -len(G_PARAMS.SEQUENTIAL_LABELS):] + delta
+    return inputs[:, -(G_PARAMS.LABEL_WINDOW_WIDTH):, -len(G_PARAMS.SEQUENTIAL_LABELS):] + delta
 
 def AddDenseHiddenLayer(model, sequential_hiddenlayers=None):
     
@@ -60,12 +60,20 @@ def Linear():
     _input_window_width = 1
     _label_window_width = 1
     _label_shift        = 0 
+    _feature_columns    = None
+    _seq_labels         = None
+    _use_residual_wrap  = None
 
     linear = tf.keras.Sequential([
         tf.keras.layers.Flatten()
     ])
 
-    _param = (_input_window_width, _label_window_width, _label_shift, None)
+    _param = (
+        _input_window_width, _label_window_width, _label_shift,
+        None,
+        _feature_columns, _seq_labels,
+        _use_residual_wrap
+    )
     return _param, linear
 
 ## Conv. Dense with Default HiddenLayer
@@ -87,6 +95,10 @@ def Conv_CustomHiddenLayer():
     _label_window_width  = 1
     _label_shift         = 0
     _sequential_hidden_l = [30, 30]
+    _feature_columns    = None
+    _seq_labels         = None
+    _use_residual_wrap  = None
+    
 
     conv = tf.keras.Sequential([
         tf.keras.layers.Conv1D(filters=32,
@@ -95,8 +107,37 @@ def Conv_CustomHiddenLayer():
     ])
     conv = AddDenseHiddenLayer(conv, _sequential_hidden_l)
 
-    _param = (_input_window_width, _label_window_width, _label_shift, _sequential_hidden_l)
+    _param = (
+        _input_window_width, _label_window_width, _label_shift, 
+        _sequential_hidden_l,
+        _feature_columns, _seq_labels,
+        _use_residual_wrap
+    )
     return _param, conv
+
+## Simple LSTM with Custom HiddenLayer
+def LSTM_CustomHiddenLayer():
+    _param = None
+    _input_window_width  = 5
+    _label_window_width  = 1
+    _label_shift         = 1
+    _sequential_hidden_l = [30, 30]
+    _feature_columns    = None
+    _seq_labels         = None
+    _use_residual_wrap  = None
+
+    lstm = tf.keras.Sequential([
+        tf.keras.layers.LSTM(32)
+    ])
+    lstm = AddDenseHiddenLayer(lstm, _sequential_hidden_l)
+
+    _param = (
+        _input_window_width, _label_window_width, _label_shift, 
+        _sequential_hidden_l,
+        _feature_columns, _seq_labels,
+        _use_residual_wrap
+    )
+    return _param, lstm
 
 
 # DefaultModelDefinition

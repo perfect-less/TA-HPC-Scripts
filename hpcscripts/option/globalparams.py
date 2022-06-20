@@ -9,8 +9,16 @@ def ApplyModelDefinition(model_definition):
     apply its parameter to current settings."""
     global MODEL, INPUT_WINDOW_WIDTH, LABEL_WINDOW_WIDTH, LABEL_SHIFT, SEQUENTIAL_HIDDENLAYERS
 
+    # Unpack model and it's parameters
     _param, MODEL = model_definition()
-    _input_window_width, _label_window_width, _label_shift, _seq_hl = _param
+
+    (
+        _input_window_width, _label_window_width, _label_shift,
+        _seq_hl,
+        _feature_columns, _seq_labels,
+        _use_residual_wrap
+        
+        ) = _param
 
     if not _param == None:
         INPUT_WINDOW_WIDTH = _input_window_width
@@ -19,6 +27,15 @@ def ApplyModelDefinition(model_definition):
 
         if not _seq_hl == None:
             SEQUENTIAL_HIDDENLAYERS = _seq_hl
+
+        if not _feature_columns == None:
+            FEATURE_COLUMNS = _feature_columns
+
+        if not _seq_labels == None:
+            SEQUENTIAL_LABELS = _seq_labels
+
+        if not _use_residual_wrap == None:
+            USE_RESIDUAL_WRAPPER = _use_residual_wrap
 
 
 
@@ -40,7 +57,7 @@ METRICS = [
             keras.metrics.MeanAbsoluteError()
         ]
 FEATURE_COLUMNS = ["hralt_m", "theta_rad", "aoac_rad", "cas_mps"]
-SEQUENTIAL_LABELS = ['elv_l_rad']
+SEQUENTIAL_LABELS = ['elv_l_rad', 'N1s_rpm']
 CALLBACKS = [early_stop]
 TRAIN_EPOCHS = 20
 
