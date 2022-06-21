@@ -7,11 +7,17 @@ import hpcscripts.trainers.modeldefinitions as mod_def
 def ApplyModelDefinition(model_definition):
     """Set model inside model_definition as current model and
     apply its parameter to current settings."""
-    global MODEL, INPUT_WINDOW_WIDTH, LABEL_WINDOW_WIDTH, LABEL_SHIFT, SEQUENTIAL_HIDDENLAYERS
-    global FEATURE_COLUMNS, SEQUENTIAL_LABELS, USE_RESIDUAL_WRAPPER
+    global PARAMS
 
     # Unpack model and it's parameters
     _param, MODEL = model_definition()
+    PARAMS = _param
+
+    SetParams(_param)
+
+def SetParams(_param):
+    global MODEL, INPUT_WINDOW_WIDTH, LABEL_WINDOW_WIDTH, LABEL_SHIFT, SEQUENTIAL_HIDDENLAYERS
+    global FEATURE_COLUMNS, SEQUENTIAL_LABELS, USE_RESIDUAL_WRAPPER
 
     (
         _input_window_width, _label_window_width, _label_shift,
@@ -37,7 +43,6 @@ def ApplyModelDefinition(model_definition):
 
         if not _use_residual_wrap == None:
             USE_RESIDUAL_WRAPPER = _use_residual_wrap
-
 
 
 
@@ -75,6 +80,7 @@ USE_RESIDUAL_WRAPPER = False
 
 # MODEL DEFINITION
 # See modeldefinitions.py in trainers folder
+PARAMS = None
 _, MODEL = mod_def.DefaultModelDefinition()
 ApplyModelDefinition(mod_def.DefaultModelDefinition)
 

@@ -8,6 +8,7 @@ from hpcscripts.option import globalparams as G_PARAMS
 from hpcscripts.cleaners import cleantocsv
 from hpcscripts.selectors import flightselector
 from hpcscripts.trainers import anntrainer, traindatahandler
+from hpcscripts.trainers import modeldefinitions as mdef
 from hpcscripts.postprocesses import rsquared
 from hpcscripts.sharedutils.trainingutils import SetLowTFVerbose
 
@@ -56,7 +57,7 @@ def main ():
     # Begin Process
     print ("HPCSCRIPTS called at {}".format(datetime.datetime.now()))
     start_time = datetime.datetime.now()
-    
+
     # Initialize Program
     pathhandler.InitDataDirectories()
 

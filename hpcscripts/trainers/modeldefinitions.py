@@ -141,4 +141,4 @@ def LSTM_CustomHiddenLayer():
 
 
 # DefaultModelDefinition
-DefaultModelDefinition = Conv_CustomHiddenLayer
+DefaultModelDefinition = Linear

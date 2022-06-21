@@ -16,6 +16,9 @@ from hpcscripts.option import globalparams as G_PARAMS
 
 def CalculateRSquared(test_files: List[str], model: keras.Model, norm_param):
     
+    # Reconfiguring G_PARAMS
+    # G_PARAMS.ApplyModelDefinition()
+
     labels = G_PARAMS.SEQUENTIAL_LABELS
     r2_list = []
     columns = ["filename"]
@@ -82,7 +85,7 @@ def run(selected_index: int=None):
     train_data, norm_param = DF_Nomalize(pd.read_csv(train_file))
     
     model_path = SelectModelPrompt(ph.GetModelsPath(), selected_index)
-    model, _ = LoadModel(model_path)
+    model, _, _ = LoadModel(model_path)
 
     # List test files
     test_dir = ph.GetProcessedPath("Test")

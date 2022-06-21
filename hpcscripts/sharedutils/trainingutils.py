@@ -12,6 +12,7 @@ from hpcscripts.option import pathhandler as ph
 from hpcscripts.option import globalparams as G_PARAMS
 from hpcscripts.sharedutils.nomalization import DF_Nomalize
 from hpcscripts.trainers.windowmanager import WindowGenerator
+from hpcscripts.trainers import modeldefinitions as mdef
 
 
 def SetLowTFVerbose():
@@ -72,17 +73,24 @@ def SaveModel(model: keras.Model, history):
     folder_name = "ANN " + str (datetime.datetime.now())[:-7]
     model_directory = os.path.join (ph.GetModelsPath(), folder_name)
     history_file = os.path.join(model_directory, 'history.pkl')
+    modelsmeta_file = os.path.join(model_directory, 'modelsmeta.pkl')
 
     model.save(model_directory)
     print ("Model saved to {}".format(model_directory))
 
+    param = G_PARAMS.PARAMS
+
     with open(history_file, 'wb') as f:
         pickle.dump(history.history, f)
     print ("Model history saved to {}".format(history_file))
+    with open(modelsmeta_file, 'wb') as mf:
+        pickle.dump(param, mf)
+    print ("Model metadata saved to {}".format(modelsmeta_file))
 
 def LoadModel(path_to_model):
     """Load Model and optionally it's history as well"""
     history_file = os.path.join(path_to_model, 'history.pkl')
+    modelsmeta_file = os.path.join(path_to_model, 'modelsmeta.pkl')
     model = tf.keras.models.load_model(path_to_model)
     # model = tf.saved_model.load(path_to_model)
     print ("model loaded")
@@ -90,8 +98,11 @@ def LoadModel(path_to_model):
     with open(history_file, 'rb') as f:
         history = pickle.load(f)
     print ("model history loaded")
+    with open(modelsmeta_file, 'rb') as nf:
+        modelsmeta = pickle.load(nf)
+    print ("model metadata loaded")
 
-    return model, history
+    return model, history, modelsmeta
 
 
 
