@@ -22,7 +22,8 @@ COMMAND_FLAG = {
 
 command_control = {
     'start': 'clean',
-    'finish': 'post'
+    'finish': 'post',
+    'last': 'no'
 }
 
 
@@ -37,6 +38,10 @@ def RunProcess(process_name: str):
         COMMAND_FLAG[process_name](G_PARAMS.DATAPROCESSING_POOL)
         return
     
+    if process_name == 'post' and command_control['last'] == 'yes':
+        COMMAND_FLAG[process_name](9999)
+        return
+
     COMMAND_FLAG[process_name]()
 
 
@@ -90,9 +95,12 @@ def create_parser(parser: argparse.ArgumentParser):
     prs.add_argument('-p', '--post', action="store_true",
 					help = "Run only post-process command")
 
+    prs.add_argument('-l', '--last', action="store_true",
+					help = "Automatically select last model on post process")
+
     # Set Specific command
-    prs.add_argument('--since', action="store",
-					help = """Run since specified command,
+    prs.add_argument('--since', '--from', action="store",
+					help = """Run from specified command,
 					example: `hpc_scripts --since train` to run from train command onwards.""")
 
     prs.add_argument('--until', action="store",
@@ -107,6 +115,9 @@ def create_parser(parser: argparse.ArgumentParser):
     return prs
 
 def process_args(prs: argparse.ArgumentParser):
+    if prs.last:        
+        command_control['last'] = 'yes'
+
     if prs.post:        
         command_control['start'] = 'post'
         command_control['finish']= 'post'

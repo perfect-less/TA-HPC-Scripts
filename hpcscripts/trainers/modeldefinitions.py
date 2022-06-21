@@ -93,11 +93,11 @@ def Conv_CustomHiddenLayer():
     _param = None
     _input_window_width  = 5
     _label_window_width  = 1
-    _label_shift         = 0
+    _label_shift         = 1
     _sequential_hidden_l = [30, 30]
-    _feature_columns    = None
-    _seq_labels         = None
-    _use_residual_wrap  = None
+    _feature_columns    = ["hralt_m", "theta_rad", "aoac_rad", "cas_mps", 'elv_l_rad', 'N1s_rpm']
+    _seq_labels         = ['elv_l_rad', 'N1s_rpm']
+    _use_residual_wrap  = True
     
 
     conv = tf.keras.Sequential([
@@ -123,7 +123,7 @@ def LSTM_CustomHiddenLayer():
     _label_shift         = 1
     _sequential_hidden_l = [30, 30]
     _feature_columns    = None
-    _seq_labels         = None
+    _seq_labels         = ['elv_l_rad']
     _use_residual_wrap  = None
 
     lstm = tf.keras.Sequential([

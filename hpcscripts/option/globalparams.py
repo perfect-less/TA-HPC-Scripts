@@ -8,6 +8,7 @@ def ApplyModelDefinition(model_definition):
     """Set model inside model_definition as current model and
     apply its parameter to current settings."""
     global MODEL, INPUT_WINDOW_WIDTH, LABEL_WINDOW_WIDTH, LABEL_SHIFT, SEQUENTIAL_HIDDENLAYERS
+    global FEATURE_COLUMNS, SEQUENTIAL_LABELS, USE_RESIDUAL_WRAPPER
 
     # Unpack model and it's parameters
     _param, MODEL = model_definition()

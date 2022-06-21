@@ -11,7 +11,7 @@ def ListModels(models_directory: str):
 
     return models_list
 
-def SelectModelPrompt(models_directory):
+def SelectModelPrompt(models_directory, select: int=None):
 
     models_list = ListModels(models_directory)
     models_list.sort()
@@ -28,8 +28,11 @@ def SelectModelPrompt(models_directory):
                             number, 
                             os.path.basename (models_path)
                         ))
-    index = input("Please input your model's index (e.g 0): ")
-    index = int(index)
+    if select == None:
+        index = input("Please input your model's index (e.g 0): ")
+        index = min(max(int(index), 0), len(models_list)-1)
+    else:
+        index = min(max(select, 0), len(models_list)-1) # clamp select
 
     print ("You selected model {}".format(os.path.basename (models_list[index])))
 

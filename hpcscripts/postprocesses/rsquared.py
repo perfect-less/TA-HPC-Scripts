@@ -72,7 +72,7 @@ def CalculateRSquared(test_files: List[str], model: keras.Model, norm_param):
     r2_df = pd.DataFrame(r2_list, columns=columns)
     return r2_df
 
-def run():
+def run(selected_index: int=None):
 
     # Make TensorFlow little bit quiter
     SetLowTFVerbose()
@@ -81,7 +81,7 @@ def run():
     train_file = os.path.join(ph.GetProcessedPath("Combined"), "Train_set.csv")
     train_data, norm_param = DF_Nomalize(pd.read_csv(train_file))
     
-    model_path = SelectModelPrompt(ph.GetModelsPath())
+    model_path = SelectModelPrompt(ph.GetModelsPath(), selected_index)
     model, _ = LoadModel(model_path)
 
     # List test files
