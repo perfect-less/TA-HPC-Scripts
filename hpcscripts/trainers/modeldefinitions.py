@@ -39,6 +39,28 @@ def AddDenseHiddenLayer(model, sequential_hiddenlayers=None):
     
     return model
 
+def ModelDefBuilder(
+    input_window_width  = 1,
+    label_window_width  = 1,
+    label_shift         = 1,
+    sequential_hidden_l = None,
+    feature_columns    = None,
+    seq_labels         = None,
+    use_residual_wrap  = None,
+
+    none_param = False,
+    model = None
+):
+    param = None
+    if none_param == False:
+        param = (
+            input_window_width, label_window_width, label_shift, 
+            sequential_hidden_l,
+            feature_columns, seq_labels,
+            use_residual_wrap
+        )
+    return param, model
+
 
 # V V -  -  -  -  -  -  -  -  -  -  V V
 # V V  MODEL DEFINITION BEGIN HERE  V V
@@ -56,89 +78,85 @@ def AddDenseHiddenLayer(model, sequential_hiddenlayers=None):
 
 ## Multi-step Linear Model with 1 Dense
 def Linear():
-    _param = None
-    _input_window_width = 1
-    _label_window_width = 1
-    _label_shift        = 0 
-    _feature_columns    = None
-    _seq_labels         = None
-    _use_residual_wrap  = None
 
     linear = tf.keras.Sequential([
         tf.keras.layers.Flatten()
     ])
 
-    _param = (
-        _input_window_width, _label_window_width, _label_shift,
-        None,
-        _feature_columns, _seq_labels,
-        _use_residual_wrap
+    return ModelDefBuilder(
+        input_window_width=1,
+        label_window_width=1,
+        label_shift=0,
+
+        model=linear
     )
-    return _param, linear
 
 ## Conv. Dense with Default HiddenLayer
 def Conv():
-    _param = None
-
     conv = tf.keras.Sequential([
         tf.keras.layers.Conv1D(filters=32,
                             kernel_size=(G_PARAMS.INPUT_WINDOW_WIDTH),
                             activation='relu')
     ])
     conv = AddDenseHiddenLayer(conv)
-    return _param, conv
+
+    return ModelDefBuilder(
+        none_param=True,
+
+        model=conv
+    )
 
 ## Conv. Dense with Custom HiddenLayer
 def Conv_CustomHiddenLayer():
-    _param = None
-    _input_window_width  = 5
-    _label_window_width  = 1
-    _label_shift         = 1
-    _sequential_hidden_l = [30, 30]
-    _feature_columns    = ["hralt_m", "theta_rad", "aoac_rad", "cas_mps", 'elv_l_rad', 'N1s_rpm']
-    _seq_labels         = ['elv_l_rad', 'N1s_rpm']
-    _use_residual_wrap  = True
-    
+
+    input_window_width = 5
+    sequential_hidden_l = [30, 30]
 
     conv = tf.keras.Sequential([
         tf.keras.layers.Conv1D(filters=32,
-                            kernel_size=(_input_window_width),
+                            kernel_size=(input_window_width),
                             activation='relu')
     ])
-    conv = AddDenseHiddenLayer(conv, _sequential_hidden_l)
+    conv = AddDenseHiddenLayer(conv, sequential_hidden_l)
 
-    _param = (
-        _input_window_width, _label_window_width, _label_shift, 
-        _sequential_hidden_l,
-        _feature_columns, _seq_labels,
-        _use_residual_wrap
+    return ModelDefBuilder(
+        input_window_width  = input_window_width,
+        label_window_width  = 1,
+        label_shift         = 1,
+        sequential_hidden_l = sequential_hidden_l,
+        feature_columns    = ["hralt_m", "theta_rad", "aoac_rad", "cas_mps", 'elv_l_rad', 'N1s_rpm'],
+        seq_labels         = ['elv_l_rad', 'N1s_rpm'],
+        use_residual_wrap  = True,
+
+        model=conv
     )
-    return _param, conv
 
 ## Simple LSTM with Custom HiddenLayer
 def LSTM_CustomHiddenLayer():
-    _param = None
-    _input_window_width  = 5
-    _label_window_width  = 1
-    _label_shift         = 1
-    _sequential_hidden_l = [30, 30]
-    _feature_columns    = None
-    _seq_labels         = ['elv_l_rad']
-    _use_residual_wrap  = None
-
+    
+    sequential_hidden_l = [30, 30]
+    
     lstm = tf.keras.Sequential([
         tf.keras.layers.LSTM(32)
     ])
-    lstm = AddDenseHiddenLayer(lstm, _sequential_hidden_l)
+    lstm = AddDenseHiddenLayer(lstm, sequential_hidden_l)
 
-    _param = (
-        _input_window_width, _label_window_width, _label_shift, 
-        _sequential_hidden_l,
-        _feature_columns, _seq_labels,
-        _use_residual_wrap
+    return ModelDefBuilder(
+        input_window_width  = 5,
+        label_window_width  = 1,
+        label_shift         = 1,
+        sequential_hidden_l=sequential_hidden_l,
+        seq_labels         = ['elv_l_rad'],
+
+        model=lstm
     )
-    return _param, lstm
 
-
-# DefaultModelDefinition
-DefaultModelDefinition = Linear
+#
+# MODEL_DEFINITIONS dictionary
+MODEL_DEFINITIONS = {
+    'default'       : Linear,
+    'linear'        : Linear,
+    'conv_simple'   : Conv,
+    'conv_hidden'   : Conv_CustomHiddenLayer,
+    'lstm_hidden'   : LSTM_CustomHiddenLayer
+}

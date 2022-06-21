@@ -4,30 +4,29 @@ import datetime
 import argparse
 
 from hpcscripts.option import pathhandler
+from hpcscripts.trainers import modeldefinitions as mdef
 from hpcscripts.option import globalparams as G_PARAMS
 from hpcscripts.cleaners import cleantocsv
 from hpcscripts.selectors import flightselector
 from hpcscripts.trainers import anntrainer, traindatahandler
-from hpcscripts.trainers import modeldefinitions as mdef
 from hpcscripts.postprocesses import rsquared
 from hpcscripts.sharedutils.trainingutils import SetLowTFVerbose
 
 
 COMMAND_FLAG = {
-    'clean': cleantocsv.run,
-    'select': flightselector.run,
-    'trainready': traindatahandler.run,
-    'train': anntrainer.run,
-    'post': rsquared.run
-}
+        'clean': cleantocsv.run,
+        'select': flightselector.run,
+        'trainready': traindatahandler.run,
+        'train': anntrainer.run,
+        'post': rsquared.run
+    }
 
 command_control = {
     'start': 'clean',
     'finish': 'post',
-    'last': 'no'
+    'last': 'no',
+    'model_id': 'default'
 }
-
-
 
 def invalid_input(arg: str):
     print ("Invalid Argument -> {}", arg)
@@ -35,15 +34,19 @@ def invalid_input(arg: str):
 
 def RunProcess(process_name: str):
 
-    if process_name == 'clean':
-        COMMAND_FLAG[process_name](G_PARAMS.DATAPROCESSING_POOL)
-        return
-    
-    if process_name == 'post' and command_control['last'] == 'yes':
-        COMMAND_FLAG[process_name](9999)
-        return
+        if process_name == 'clean':
+            COMMAND_FLAG[process_name](G_PARAMS.DATAPROCESSING_POOL)
+            return
+        
+        if process_name == 'train':
+            COMMAND_FLAG[process_name](command_control['model_id'])
+            return
 
-    COMMAND_FLAG[process_name]()
+        if process_name == 'post' and command_control['last'] == 'yes':
+            COMMAND_FLAG[process_name](9999)
+            return
+
+        COMMAND_FLAG[process_name]()
 
 
 def main ():
@@ -53,10 +56,11 @@ def main ():
 
     args = parser.parse_args()
     process_args(args)
-    
+
     # Begin Process
     print ("HPCSCRIPTS called at {}".format(datetime.datetime.now()))
     start_time = datetime.datetime.now()
+
 
     # Initialize Program
     pathhandler.InitDataDirectories()
@@ -83,9 +87,6 @@ def main ():
     print ("exit time {}".format(datetime.datetime.now()))
     print ("total runtime: {}".format( run_time ))
 
-
-
-
 # ==============PARSER==============
 
 def create_parser(parser: argparse.ArgumentParser):
@@ -94,24 +95,28 @@ def create_parser(parser: argparse.ArgumentParser):
 
     # Command flag
     prs.add_argument('-p', '--post', action="store_true",
-					help = "Run only post-process command")
+                    help = "Run only post-process command")
 
     prs.add_argument('-l', '--last', action="store_true",
-					help = "Automatically select last model on post process")
+                    help = "Automatically select last model on post process")
 
     # Set Specific command
     prs.add_argument('--since', '--from', action="store",
-					help = """Run from specified command,
-					example: `hpc_scripts --since train` to run from train command onwards.""")
+                    help = """Run from specified command,
+                    example: `hpc_scripts --since train` to run from train command onwards.""")
 
     prs.add_argument('--until', action="store",
-					help = """Run up to specified command,
-					example: `hpc_scripts --until train` to run up to train command.
+                    help = """Run up to specified command,
+                    example: `hpc_scripts --until train` to run up to train command.
                     Command begins on --since, if --since never specified, command run from beginning.""")
 
     prs.add_argument('--only', action="store",
-					help = """Run only this particular command,
-					example: `hpc_scripts --only clean` to only clean the datasets.""")
+                    help = """Run only this particular command,
+                    example: `hpc_scripts --only clean` to only clean the datasets.""")
+    
+    # Model id
+    prs.add_argument('m_id', nargs="*", type=str,
+                    help = "Valid model id")
 
     return prs
 
@@ -143,3 +148,8 @@ def process_args(prs: argparse.ArgumentParser):
             invalid_input(str(prs.until))
         
         command_control['finish'] = str(prs.until)
+
+    if prs.m_id and len(prs.m_id) > 0:
+        command_control['model_id'] = str(prs.m_id[0])
+
+

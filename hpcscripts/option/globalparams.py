@@ -1,33 +1,33 @@
 from math import pi
 from tensorflow import keras
 
-from hpcscripts.trainers.modeldefinitions import Conv_CustomHiddenLayer, Linear, Conv
+import hpcscripts.mid as midholder
 import hpcscripts.trainers.modeldefinitions as mod_def
 
 def ApplyModelDefinition(model_definition):
     """Set model inside model_definition as current model and
     apply its parameter to current settings."""
-    global PARAMS
+    global MODEL
 
     # Unpack model and it's parameters
     _param, MODEL = model_definition()
-    PARAMS = _param
 
     SetParams(_param)
 
 def SetParams(_param):
-    global MODEL, INPUT_WINDOW_WIDTH, LABEL_WINDOW_WIDTH, LABEL_SHIFT, SEQUENTIAL_HIDDENLAYERS
-    global FEATURE_COLUMNS, SEQUENTIAL_LABELS, USE_RESIDUAL_WRAPPER
+    global INPUT_WINDOW_WIDTH, LABEL_WINDOW_WIDTH, LABEL_SHIFT, SEQUENTIAL_HIDDENLAYERS
+    global FEATURE_COLUMNS, SEQUENTIAL_LABELS, USE_RESIDUAL_WRAPPER, PARAMS
 
-    (
-        _input_window_width, _label_window_width, _label_shift,
-        _seq_hl,
-        _feature_columns, _seq_labels,
-        _use_residual_wrap
-        
-        ) = _param
+    PARAMS = _param
 
     if not _param == None:
+        (
+            _input_window_width, _label_window_width, _label_shift,
+            _seq_hl,
+            _feature_columns, _seq_labels,
+            _use_residual_wrap
+        ) = _param
+
         INPUT_WINDOW_WIDTH = _input_window_width
         LABEL_WINDOW_WIDTH = _label_window_width
         LABEL_SHIFT = _label_shift
@@ -75,14 +75,16 @@ INPUT_WINDOW_WIDTH = 1
 LABEL_WINDOW_WIDTH = 1
 LABEL_SHIFT = 0
 
-SEQUENTIAL_HIDDENLAYERS = [50, 30]
+SEQUENTIAL_HIDDENLAYERS = []
 USE_RESIDUAL_WRAPPER = False
 
 # MODEL DEFINITION
 # See modeldefinitions.py in trainers folder
 PARAMS = None
-_, MODEL = mod_def.DefaultModelDefinition()
-ApplyModelDefinition(mod_def.DefaultModelDefinition)
+MODEL_ID = midholder.model_id
+print ("G_PARAMS model_id -> {}".format(MODEL_ID))
+ApplyModelDefinition(mod_def.MODEL_DEFINITIONS[MODEL_ID])
+# _, MODEL = mod_def.MODEL_DEFINITIONS['default']()
 
 # CLEANING AND RESAMPLING
 TARGET_GAMMA = -3 * pi / 180
