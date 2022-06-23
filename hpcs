@@ -8,6 +8,8 @@ then
         echo "model id (hpcscripts/mid.py) changed to -> $2"
     else
         echo "Please enter the new model id. e.g: --mid conv_hidden"
+        echo "Current mid: "
+        cat hpcscripts/mid.py
     fi
 else
     python3 -m hpcscripts "$@"
