@@ -1,1 +1,1 @@
-model_id = 'conv_hidden'
+model_id = 'wrap_hidden'

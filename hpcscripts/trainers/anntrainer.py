@@ -12,30 +12,15 @@ from tensorflow import keras
 from hpcscripts.sharedutils.nomalization import *
 from hpcscripts.sharedutils.trainingutils import *
 from hpcscripts.trainers.windowmanager import WindowGenerator
-from hpcscripts.trainers.modeldefinitions import ResidualWrapper
+from hpcscripts.trainers.modeldefinitions import ResidualWrapper, ForecastBaseline
 from hpcscripts.option import pathhandler as ph
 from hpcscripts.option import globalparams as G_PARAMS
 
 
-def run(model_id: str=None):
+def run():
     SetLowTFVerbose()
-    print ("--------------------")
-    print ("----Begin Training Process")
-
-    # Set Global parameters
-    # if not model_id == None:
-    #     if not model_id in mdef.MODEL_DEFINITIONS.keys():
-    #         print ("ERR: Invaild model id -> {}".format(model_id))
-    #         exit()
-
-    #     _param, _model = mdef.MODEL_DEFINITIONS[model_id]()
-
-    #     G_PARAMS.MODEL = _model
-    #     G_PARAMS.SetParams(_param)
-    #     G_PARAMS.PARAMS = _param
-    # else:
-    #     model_id = ''
-
+    print ("---------------------------------------------")
+    print ("Begin Training Process")
     
     # Import Data
     train_comb= ImportCombinedTrainingData()
@@ -51,7 +36,7 @@ def run(model_id: str=None):
     windowG = CreateWindowGenerator(train_list, 
                     test_list, eval_list, norm_param)
 
-    print ("model ready..")
+    print ("Model ready, model id -> {}".format(G_PARAMS.MODEL_ID))
     print ("begin training..\n")
 
     # Train Model
@@ -64,7 +49,7 @@ def run(model_id: str=None):
     )
 
     # Save Model and Training history
-    SaveModel(model, model_id, history)
+    SaveModel(model, history)
     print ("---------------------------------------------")
 
 
@@ -112,6 +97,10 @@ def CreateANNModel():
     # Apply Residual Wrapper
     if G_PARAMS.USE_RESIDUAL_WRAPPER:
         model = ResidualWrapper(model)
+    
+    # Baseline
+    if G_PARAMS.MODEL_ID == 'baseline':
+        model = ForecastBaseline()
 
     # Compile our model
     model.compile(optimizer=G_PARAMS.OPTIMIZER,

@@ -1,10 +1,15 @@
-import sys
-import time
+import os
 import datetime
 import argparse
 
+# TENSORFLOW LOGS:
+# 0 = all messages are logged (default behavior)
+# 1 = INFO messages are not printed
+# 2 = INFO and WARNING messages are not printed
+# 3 = INFO, WARNING, and ERROR messages are not printed
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3' 
+
 from hpcscripts.option import pathhandler
-from hpcscripts.trainers import modeldefinitions as mdef
 from hpcscripts.option import globalparams as G_PARAMS
 from hpcscripts.cleaners import cleantocsv
 from hpcscripts.selectors import flightselector
@@ -12,6 +17,9 @@ from hpcscripts.trainers import anntrainer, traindatahandler
 from hpcscripts.postprocesses import rsquared
 from hpcscripts.sharedutils.trainingutils import SetLowTFVerbose
 
+#
+# IMPORTANT DATA
+#
 
 COMMAND_FLAG = {
         'clean': cleantocsv.run,
@@ -28,6 +36,10 @@ command_control = {
     'model_id': 'default'
 }
 
+# 
+# FUNCTION DEFINITION
+#
+
 def invalid_input(arg: str):
     print ("Invalid Argument -> {}", arg)
     exit()
@@ -36,10 +48,6 @@ def RunProcess(process_name: str):
 
         if process_name == 'clean':
             COMMAND_FLAG[process_name](G_PARAMS.DATAPROCESSING_POOL)
-            return
-        
-        if process_name == 'train':
-            COMMAND_FLAG[process_name](command_control['model_id'])
             return
 
         if process_name == 'post' and command_control['last'] == 'yes':
@@ -58,6 +66,7 @@ def main ():
     process_args(args)
 
     # Begin Process
+    print ()
     print ("HPCSCRIPTS called at {}".format(datetime.datetime.now()))
     start_time = datetime.datetime.now()
 
@@ -87,8 +96,9 @@ def main ():
     print ("exit time {}".format(datetime.datetime.now()))
     print ("total runtime: {}".format( run_time ))
 
+#
 # ==============PARSER==============
-
+#
 def create_parser(parser: argparse.ArgumentParser):
 
     prs = parser

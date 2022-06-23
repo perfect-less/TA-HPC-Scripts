@@ -65,7 +65,7 @@ METRICS = [
 FEATURE_COLUMNS = ["hralt_m", "theta_rad", "aoac_rad", "cas_mps"]
 SEQUENTIAL_LABELS = ['elv_l_rad', 'N1s_rpm']
 CALLBACKS = [early_stop]
-TRAIN_EPOCHS = 20
+TRAIN_EPOCHS = 50
 
 # PROCESSING 
 DATAPROCESSING_POOL = 4
@@ -82,9 +82,7 @@ USE_RESIDUAL_WRAPPER = False
 # See modeldefinitions.py in trainers folder
 PARAMS = None
 MODEL_ID = midholder.model_id
-print ("G_PARAMS model_id -> {}".format(MODEL_ID))
 ApplyModelDefinition(mod_def.MODEL_DEFINITIONS[MODEL_ID])
-# _, MODEL = mod_def.MODEL_DEFINITIONS['default']()
 
 # CLEANING AND RESAMPLING
 TARGET_GAMMA = -3 * pi / 180

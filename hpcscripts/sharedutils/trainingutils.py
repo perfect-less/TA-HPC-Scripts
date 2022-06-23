@@ -68,7 +68,7 @@ def MakeSinglePrediction(csvfile_path: str,
 
     return test_df, predictions
 
-def SaveModel(model: keras.Model, model_id: str, history):
+def SaveModel(model: keras.Model, history):
     """Save both model and history"""
     folder_name = "ANN " + str (datetime.datetime.now())[:-7]
     model_directory = os.path.join (ph.GetModelsPath(), folder_name)
@@ -76,10 +76,10 @@ def SaveModel(model: keras.Model, model_id: str, history):
     modelsmeta_file = os.path.join(model_directory, 'modelsmeta.pkl')
 
     model.save(model_directory)
-    print ("Model saved to {}".format(model_directory))
+    print ("\nModel saved to {}".format(model_directory))
 
     param = {
-        'model_id': model_id if model_id else '',
+        'model_id': G_PARAMS.MODEL_ID,
         'param' : G_PARAMS.PARAMS
     }
 
@@ -96,7 +96,7 @@ def LoadModel(path_to_model):
     modelsmeta_file = os.path.join(path_to_model, 'modelsmeta.pkl')
     model = tf.keras.models.load_model(path_to_model)
     # model = tf.saved_model.load(path_to_model)
-    print ("model loaded")
+    print ("\nmodel loaded")
 
     with open(history_file, 'rb') as f:
         history = pickle.load(f)

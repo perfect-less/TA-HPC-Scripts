@@ -22,6 +22,19 @@ class ResidualWrapper(tf.keras.Model):
     # then our feature must be ["alpha", "theta", "lambda", "beta", "gamma"]
     return inputs[:, -(G_PARAMS.LABEL_WINDOW_WIDTH):, -len(G_PARAMS.SEQUENTIAL_LABELS):] + delta
 
+class ForecastBaseline(tf.keras.Model):
+  def __init__(self):
+    super().__init__()
+
+  def call(self, inputs, *args, **kwargs):
+    
+    # This is the baseline model for forcasting problem
+    # this model basicaly takes the input and then output the same value
+    # as predictions. Our forcasting model should improve upon this
+    # 
+    # PLEASE NOTED THIS WORKS THE SAME WAY WITH RESIDUAL WRAPPER
+    return inputs[:, -(G_PARAMS.LABEL_WINDOW_WIDTH):, -len(G_PARAMS.SEQUENTIAL_LABELS):]
+
 def AddDenseHiddenLayer(model, sequential_hiddenlayers=None):
     
     if sequential_hiddenlayers == None:
@@ -91,6 +104,68 @@ def Linear():
         model=linear
     )
 
+## Baseline
+def ForecastBase():
+
+    base = tf.keras.Sequential([
+        tf.keras.layers.Flatten()
+    ])
+
+    return ModelDefBuilder(
+        input_window_width=1,
+        label_window_width=1,
+        label_shift=1,
+        feature_columns    = ['elv_l_rad', 'N1s_rpm'],
+        seq_labels         = ['elv_l_rad', 'N1s_rpm'],
+        use_residual_wrap  = False,
+
+        model=base
+    )
+
+## Simple Custom Dense HiddenLayer
+def Simple_CustomHiddenLayer():
+    
+    sequential_hidden_l = [30, 30]
+    
+    dense = tf.keras.Sequential([
+        tf.keras.layers.Flatten()
+    ])
+    dense = AddDenseHiddenLayer(dense, sequential_hidden_l)
+
+    return ModelDefBuilder(
+        input_window_width  = 1,
+        label_window_width  = 1,
+        label_shift         = 5,
+        # feature_columns    = ["hralt_m", "theta_rad", "aoac_rad", "cas_mps", 'elv_l_rad', 'N1s_rpm'],
+        feature_columns    = ['elv_l_rad', 'N1s_rpm'],
+        seq_labels         = ['elv_l_rad', 'N1s_rpm'],
+        use_residual_wrap  = False,
+
+        model=dense
+    )
+
+## Wrapped Custom Dense HiddenLayer
+def Wrap_CustomHiddenLayer():
+    
+    sequential_hidden_l = [30, 30]
+    
+    dense = tf.keras.Sequential([
+        tf.keras.layers.Flatten()
+    ])
+    dense = AddDenseHiddenLayer(dense, sequential_hidden_l)
+
+    return ModelDefBuilder(
+        input_window_width  = 5,
+        label_window_width  = 1,
+        label_shift         = 1,
+        # feature_columns    = ["hralt_m", "theta_rad", "aoac_rad", "cas_mps", 'elv_l_rad', 'N1s_rpm'],
+        feature_columns    = ['elv_l_rad', 'N1s_rpm'],
+        seq_labels         = ['elv_l_rad', 'N1s_rpm'],
+        use_residual_wrap  = True,
+
+        model=dense
+    )
+
 ## Conv. Dense with Default HiddenLayer
 def Conv():
     conv = tf.keras.Sequential([
@@ -126,7 +201,7 @@ def Conv_CustomHiddenLayer():
         sequential_hidden_l = sequential_hidden_l,
         feature_columns    = ["hralt_m", "theta_rad", "aoac_rad", "cas_mps", 'elv_l_rad', 'N1s_rpm'],
         seq_labels         = ['elv_l_rad', 'N1s_rpm'],
-        use_residual_wrap  = True,
+        use_residual_wrap  = False,
 
         model=conv
     )
@@ -145,8 +220,9 @@ def LSTM_CustomHiddenLayer():
         input_window_width  = 5,
         label_window_width  = 1,
         label_shift         = 1,
-        sequential_hidden_l=sequential_hidden_l,
-        seq_labels         = ['elv_l_rad'],
+        feature_columns    = ["hralt_m", "theta_rad", "aoac_rad", "cas_mps", 'elv_l_rad', 'N1s_rpm'],
+        seq_labels         = ['elv_l_rad', 'N1s_rpm'],
+        use_residual_wrap  = True,
 
         model=lstm
     )
@@ -156,7 +232,10 @@ def LSTM_CustomHiddenLayer():
 MODEL_DEFINITIONS = {
     'default'       : Linear,
     'linear'        : Linear,
+    'baseline'      : ForecastBase,
     'conv_simple'   : Conv,
     'conv_hidden'   : Conv_CustomHiddenLayer,
-    'lstm_hidden'   : LSTM_CustomHiddenLayer
+    'lstm_hidden'   : LSTM_CustomHiddenLayer,
+    'simp_hidden'   : Simple_CustomHiddenLayer,
+    'wrap_hidden'   : Wrap_CustomHiddenLayer
 }
