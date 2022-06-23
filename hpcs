@@ -1,3 +1,14 @@
 #!/usr/bin/env bash
 
-python3 -m hpcscripts "$@"
+if [[ "$1" == "--mid" ]]
+then 
+    if [[ "$2" != "" ]]
+    then
+        echo "model_id = '$2'" > hpcscripts/mid.py
+        echo "model id (hpcscripts/mid.py) changed to -> $2"
+    else
+        echo "Please enter the new model id. e.g: --mid conv_hidden"
+    fi
+else
+    python3 -m hpcscripts "$@"
+fi
