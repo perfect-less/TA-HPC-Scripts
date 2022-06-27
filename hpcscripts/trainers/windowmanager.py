@@ -32,15 +32,16 @@ from hpcscripts.option import globalparams as G_PARAMS
 
 class WindowGenerator():
 
-    USABLE_COLUMNS  = set (G_PARAMS.FEATURE_COLUMNS + G_PARAMS.SEQUENTIAL_LABELS)
-    FEATURE_COLUMNS = G_PARAMS.FEATURE_COLUMNS
-
     def __init__(self, input_width:int, label_width:int=1, shift:int=1,
                 train_list=None, test_list=None, val_list=None,
                 label_columns=None,
                 norm_param:dict=None,
                 shuffle_train:bool=True,
                 print_check:bool=True):
+
+        self.USABLE_COLUMNS  = set (G_PARAMS.FEATURE_COLUMNS + G_PARAMS.SEQUENTIAL_LABELS)
+        self.FEATURE_COLUMNS = G_PARAMS.FEATURE_COLUMNS
+
         # Store list of the data.
         self.train_list = train_list
         self.test_list = test_list

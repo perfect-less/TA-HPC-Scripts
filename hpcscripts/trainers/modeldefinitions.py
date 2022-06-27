@@ -187,6 +187,7 @@ def Conv_CustomHiddenLayer():
     input_window_width = 5
     sequential_hidden_l = [30, 30]
 
+    tf.keras.backend.clear_session()
     conv = tf.keras.Sequential([
         tf.keras.layers.Conv1D(filters=32,
                             kernel_size=(input_window_width),

@@ -33,7 +33,7 @@ command_control = {
     'start': 'clean',
     'finish': 'post',
     'last': 'no',
-    'model_id': 'default'
+    'model_id': None
 }
 
 # 
@@ -48,6 +48,10 @@ def RunProcess(process_name: str):
 
         if process_name == 'clean':
             COMMAND_FLAG[process_name](G_PARAMS.DATAPROCESSING_POOL)
+            return
+        
+        if process_name == 'train':
+            COMMAND_FLAG[process_name](command_control['model_id'])
             return
 
         if process_name == 'post' and command_control['last'] == 'yes':
@@ -125,7 +129,7 @@ def create_parser(parser: argparse.ArgumentParser):
                     example: `hpc_scripts --only clean` to only clean the datasets.""")
     
     # Model id
-    prs.add_argument('m_id', nargs="*", type=str,
+    prs.add_argument('--mid', nargs="*", type=str,
                     help = "Valid model id")
 
     return prs
@@ -159,7 +163,7 @@ def process_args(prs: argparse.ArgumentParser):
         
         command_control['finish'] = str(prs.until)
 
-    if prs.m_id and len(prs.m_id) > 0:
-        command_control['model_id'] = str(prs.m_id[0])
+    if prs.mid and len(prs.mid) > 0:
+        command_control['model_id'] = str(prs.mid[0])
 
 

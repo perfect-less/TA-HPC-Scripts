@@ -12,15 +12,27 @@ from tensorflow import keras
 from hpcscripts.sharedutils.nomalization import *
 from hpcscripts.sharedutils.trainingutils import *
 from hpcscripts.trainers.windowmanager import WindowGenerator
-from hpcscripts.trainers.modeldefinitions import ResidualWrapper, ForecastBaseline
+from hpcscripts.trainers.modeldefinitions import ResidualWrapper, ForecastBaseline, MODEL_DEFINITIONS
 from hpcscripts.option import pathhandler as ph
 from hpcscripts.option import globalparams as G_PARAMS
 
 
-def run():
+def run(model_id: str = None):
     SetLowTFVerbose()
     print ("---------------------------------------------")
     print ("Begin Training Process")
+
+    # Model Definition
+    tf.keras.backend.clear_session()
+    if model_id != None:
+        if not model_id in MODEL_DEFINITIONS:
+            print ("Err: invalid model id -> {}".format(model_id))
+            exit (1)
+
+        G_PARAMS.MODEL_ID = model_id
+        G_PARAMS.ApplyModelDefinition(
+            mdef.MODEL_DEFINITIONS[G_PARAMS.MODEL_ID]
+        )
     
     # Import Data
     train_comb= ImportCombinedTrainingData()
@@ -107,6 +119,13 @@ def CreateANNModel():
                 loss=G_PARAMS.LOSS,
                 metrics=G_PARAMS.METRICS
                 )
+
+    print ("G_PARAMS.INPUT_WINDOW_WIDTH: {}".format(G_PARAMS.INPUT_WINDOW_WIDTH))
+    print ("G_PARAMS.FEATURE_COLUMNS: {}".format(G_PARAMS.FEATURE_COLUMNS))
+    print ("G_PARAMS.SEQUENTIAL_LABELS: {}".format(G_PARAMS.SEQUENTIAL_LABELS))
+
+    model.build(input_shape = [None, G_PARAMS.INPUT_WINDOW_WIDTH, len(G_PARAMS.FEATURE_COLUMNS)])
+    print (model.summary())
 
     return model
 
