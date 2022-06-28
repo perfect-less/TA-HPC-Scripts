@@ -17,18 +17,21 @@ def default_tuner():
 
         if lstm_layers > 0:
             for i in range (lstm_layers):
+                ret_seq = not (i == (lstm_layers - 1))
                 if is_bidirectional:
                     model.add(
                         tf.keras.layers.Bidirectional(
                             tf.keras.layers.LSTM(
-                                hp.Int(f"lstm_units_{i}", min_value=16, max_value=128, step=16)
+                                hp.Int(f"lstm_units_{i}", min_value=16, max_value=128, step=16),
+                                return_sequences=ret_seq
                             )
                         )
                     )
                 else:
                     model.add(
                         tf.keras.layers.LSTM(
-                            hp.Int(f"lstm_units_{i}", min_value=16, max_value=128, step=16)
+                            hp.Int(f"lstm_units_{i}", min_value=16, max_value=128, step=16),
+                            return_sequences=ret_seq
                         )
                     )
         else:
