@@ -1,6 +1,6 @@
-import sys 
 import os
 import glob
+import datetime
 
 import hpcscripts.option.globalparams as G_PARAMS
 
@@ -22,11 +22,17 @@ def GetModelsPath():
 def GetResultsPath():
     return os.path.join(GetDataPath(), "Results")
 
+def GetTuningPath():
+    return os.path.join(GetDataPath(), "Tuning")
+
 def GetThisDir():
     return os.path.dirname( os.path.abspath(__file__) )
 
 def GetProcessedPath(dir="Sampled"):
     return os.path.join(GetProcessedDataPath(), dir)
+
+def GetTuningSubpath(dir="TUNE 1"):
+    return os.path.join(GetTuningSubpath, dir)
 
 
 def ClearProcessedDir(dir):
@@ -45,3 +51,12 @@ def InitDataDirectories():
 
         if not os.path.exists(full_path):
             os.makedirs(full_path)
+
+def InitTuningSubdir():
+    folder_name = "TUNE " + str (datetime.datetime.now())[:-7]
+    full_path = os.path.join(GetTuningPath(), folder_name)
+
+    if not os.path.exists(full_path):
+        os.makedirs(full_path)
+    
+    return full_path

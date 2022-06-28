@@ -114,6 +114,7 @@ LEFT_ALONE_LIST = ["time_s", "flap_te_pos", "cas_mps", "theta_rad", "aoac_rad"]
 # OPERATIONAL
 DATA_DIRECORIES = [
         "Data",
+        "Data/Tuning",
         "Data/Models",
         "Data/Raw",
         "Data/Results",

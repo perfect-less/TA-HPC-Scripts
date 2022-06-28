@@ -1,5 +1,5 @@
 """Calculating rsquared for Models in Data direcory"""
-from cgi import test
+
 import os
 from typing import List
 
@@ -75,7 +75,7 @@ def CalculateRSquared(test_files: List[str], model: keras.Model, norm_param):
     r2_df = pd.DataFrame(r2_list, columns=columns)
     return r2_df
 
-def run(selected_index: int=None):
+def run(selected_index: int=None, optional_path: str=None):
 
     # Make TensorFlow little bit quiter
     SetLowTFVerbose()
@@ -84,7 +84,9 @@ def run(selected_index: int=None):
     train_file = os.path.join(ph.GetProcessedPath("Combined"), "Train_set.csv")
     train_data, norm_param = DF_Nomalize(pd.read_csv(train_file))
     
-    model_path = SelectModelPrompt(ph.GetModelsPath(), selected_index)
+    models_path = ph.GetModelsPath() if optional_path==None else optional_path
+
+    model_path = SelectModelPrompt(models_path, selected_index)
     model, _, _ = LoadModel(model_path)
 
     # List test files

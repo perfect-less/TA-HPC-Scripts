@@ -13,7 +13,7 @@ from hpcscripts.option import pathhandler
 from hpcscripts.option import globalparams as G_PARAMS
 from hpcscripts.cleaners import cleantocsv
 from hpcscripts.selectors import flightselector
-from hpcscripts.trainers import anntrainer, traindatahandler
+from hpcscripts.trainers import anntrainer, traindatahandler, anntuner
 from hpcscripts.postprocesses import rsquared
 from hpcscripts.sharedutils.trainingutils import SetLowTFVerbose
 
@@ -26,14 +26,17 @@ COMMAND_FLAG = {
         'select': flightselector.run,
         'trainready': traindatahandler.run,
         'train': anntrainer.run,
-        'post': rsquared.run
+        'post': rsquared.run,
+
+        'tune': anntuner.run
     }
 
 command_control = {
     'start': 'clean',
     'finish': 'post',
     'last': 'no',
-    'model_id': None
+    'model_id': None,
+    'tuner_id': None
 }
 
 # 
@@ -52,6 +55,10 @@ def RunProcess(process_name: str):
         
         if process_name == 'train':
             COMMAND_FLAG[process_name](command_control['model_id'])
+            return
+
+        if process_name == 'tune':
+            COMMAND_FLAG[process_name](command_control['tuner_id'])
             return
 
         if process_name == 'post' and command_control['last'] == 'yes':
@@ -132,9 +139,17 @@ def create_parser(parser: argparse.ArgumentParser):
     prs.add_argument('--mid', nargs="*", type=str,
                     help = "Valid model id")
 
+    prs.add_argument('--tune', nargs="*", type=str,
+                    help = "Valid tune id")
+
     return prs
 
 def process_args(prs: argparse.ArgumentParser):
+    if prs.tune and len(prs.tune) > 0:
+        command_control['tuner_id'] = str(prs.tune[0])
+        command_control['start'] = 'tune'
+        command_control['finish']= 'tune'
+
     if prs.last:        
         command_control['last'] = 'yes'
 

@@ -29,6 +29,32 @@ def TrainModel(model, training_data, eval_data, callbacks, epochs=10):
 
     return history
 
+def ImportCombinedTrainingData():
+    train_file = os.path.join(ph.GetProcessedPath("Combined"), "Train_set.csv")
+    train_data = pd.read_csv(train_file)
+
+    return train_data
+
+def GetFileList():
+    train_dir = ph.GetProcessedPath("Train")
+    test_dir  = ph.GetProcessedPath("Test")
+    eval_dir  = ph.GetProcessedPath("Eval")
+
+    train_list = os.listdir(train_dir)
+    test_list  = os.listdir(test_dir)
+    eval_list  = os.listdir(eval_dir)
+
+    for i, train_file in enumerate (train_list):
+        train_list[i] = os.path.join(train_dir, train_file)
+
+    for i, test_file in enumerate (test_list):
+        test_list[i] = os.path.join(test_dir, test_file)
+
+    for i, eval_file in enumerate (eval_list):
+        eval_list[i] = os.path.join(eval_dir, eval_file)
+
+    return train_list, test_list, eval_list
+
 def CreateWindowGenerator(train_list, test_list, eval_list, norm_param:dict):
     windowG = WindowGenerator(
 
@@ -68,10 +94,14 @@ def MakeSinglePrediction(csvfile_path: str,
 
     return test_df, predictions
 
-def SaveModel(model: keras.Model, history):
+def SaveModel(model: keras.Model, history, model_id: str = None, optional_path: str=None):
     """Save both model and history"""
     folder_name = "ANN " + str (datetime.datetime.now())[:-7]
-    model_directory = os.path.join (ph.GetModelsPath(), folder_name)
+    if optional_path != None:
+        model_directory = os.path.join (optional_path, folder_name)
+    else:
+        model_directory = os.path.join (ph.GetModelsPath(), folder_name)
+
     history_file = os.path.join(model_directory, 'history.pkl')
     modelsmeta_file = os.path.join(model_directory, 'modelsmeta.pkl')
 
@@ -79,7 +109,7 @@ def SaveModel(model: keras.Model, history):
     print ("\nModel saved to {}".format(model_directory))
 
     param = {
-        'model_id': G_PARAMS.MODEL_ID,
+        'model_id': G_PARAMS.MODEL_ID if model_id == None else model_id,
         'param' : G_PARAMS.PARAMS
     }
 

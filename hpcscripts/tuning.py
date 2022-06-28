@@ -1,0 +1,4 @@
+# Tuning config
+
+MAX_TRIALS = 50
+PICK_MODEL_COUNTS = 10

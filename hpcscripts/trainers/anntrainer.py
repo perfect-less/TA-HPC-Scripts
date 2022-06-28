@@ -66,34 +66,6 @@ def run(model_id: str = None):
 
 
 
-
-def ImportCombinedTrainingData():
-    train_file = os.path.join(ph.GetProcessedPath("Combined"), "Train_set.csv")
-    train_data = pd.read_csv(train_file)
-
-    return train_data
-
-def GetFileList():
-    train_dir = ph.GetProcessedPath("Train")
-    test_dir  = ph.GetProcessedPath("Test")
-    eval_dir  = ph.GetProcessedPath("Eval")
-
-    train_list = os.listdir(train_dir)
-    test_list  = os.listdir(test_dir)
-    eval_list  = os.listdir(eval_dir)
-
-    for i, train_file in enumerate (train_list):
-        train_list[i] = os.path.join(train_dir, train_file)
-
-    for i, test_file in enumerate (test_list):
-        test_list[i] = os.path.join(test_dir, test_file)
-
-    for i, eval_file in enumerate (eval_list):
-        eval_list[i] = os.path.join(eval_dir, eval_file)
-
-    return train_list, test_list, eval_list
-
-
 def CreateANNModel():
     """Create and Compile Model"""
     # Get Model Definition from Global Param
