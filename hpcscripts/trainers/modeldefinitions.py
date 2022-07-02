@@ -220,7 +220,7 @@ def Conv_CustomHiddenLayer():
         label_window_width  = 1,
         label_shift         = 1,
         sequential_hidden_l = sequential_hidden_l,
-        feature_columns    = ["hralt_m", "theta_rad", "aoac_rad", "cas_mps", 'elv_l_rad', 'N1s_rpm'],
+        feature_columns    = ['hralt_m', 'theta_rad', 'cas_mps', 'gs_dev_ddm', 'hdot_1_mps', 'elv_l_rad', 'N1s_rpm'],
         seq_labels         = ['elv_l_rad', 'N1s_rpm'],
         use_residual_wrap  = False,
 
@@ -241,7 +241,7 @@ def LSTM_CustomHiddenLayer():
         input_window_width  = 5,
         label_window_width  = 1,
         label_shift         = 1,
-        feature_columns    = ["hralt_m", "theta_rad", "aoac_rad", "cas_mps", 'elv_l_rad', 'N1s_rpm'],
+        feature_columns    = ['hralt_m', 'theta_rad', 'cas_mps', 'gs_dev_ddm', 'hdot_1_mps', 'elv_l_rad', 'N1s_rpm'],
         seq_labels         = ['elv_l_rad', 'N1s_rpm'],
         use_residual_wrap  = True,
 
