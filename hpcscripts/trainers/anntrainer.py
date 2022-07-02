@@ -17,7 +17,7 @@ from hpcscripts.option import pathhandler as ph
 from hpcscripts.option import globalparams as G_PARAMS
 
 
-def run(model_id: str = None):
+def run(model_id: str = None, save_model: bool=True, return_model: bool=False):
     SetLowTFVerbose()
     print ("---------------------------------------------")
     print ("Begin Training Process")
@@ -61,7 +61,12 @@ def run(model_id: str = None):
     )
 
     # Save Model and Training history
-    SaveModel(model, history)
+    if save_model:
+        SaveModel(model, history)
+
+    # Return model and history
+    if return_model:
+        return model, history
     print ("---------------------------------------------")
 
 

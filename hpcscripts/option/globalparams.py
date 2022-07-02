@@ -52,7 +52,7 @@ def SetParams(_param):
 # V V -  -  -  -  -  -  -  -  -  -  V V
 
 # DEFINITION
-early_stop = keras.callbacks.EarlyStopping(monitor='val_loss',patience=3)
+early_stop = keras.callbacks.EarlyStopping(monitor='val_loss', patience=3)
 
 # NEURAL NETWORK
 OPTIMIZER = 'adam'
@@ -62,7 +62,7 @@ METRICS = [
             keras.metrics.MeanSquaredError(), 
             keras.metrics.MeanAbsoluteError()
         ]
-FEATURE_COLUMNS = ["hralt_m", "theta_rad", "aoac_rad", "cas_mps"]
+FEATURE_COLUMNS = ['hralt_m', 'theta_rad', 'cas_mps', 'hdot_1_mps']
 SEQUENTIAL_LABELS = ['elv_l_rad', 'N1s_rpm']
 CALLBACKS = [early_stop]
 TRAIN_EPOCHS = 50

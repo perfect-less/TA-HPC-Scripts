@@ -104,7 +104,27 @@ def Linear():
         model=linear
     )
 
-## Baseline
+def Simple_Dense():
+
+    sequential_hidden_l = [20]
+
+    sdense = tf.keras.Sequential([
+        tf.keras.layers.Flatten()
+    ])
+
+    model = AddDenseHiddenLayer(sdense, sequential_hidden_l)
+
+    return ModelDefBuilder(
+        input_window_width=1,
+        label_window_width=1,
+        label_shift=0,
+
+        sequential_hidden_l=sequential_hidden_l,
+
+        model=sdense
+    )
+
+## Time-Series Baseline
 def ForecastBase():
 
     base = tf.keras.Sequential([
@@ -233,6 +253,7 @@ def LSTM_CustomHiddenLayer():
 MODEL_DEFINITIONS = {
     'default'       : Linear,
     'linear'        : Linear,
+    'simp_dense'    : Simple_Dense,
     'baseline'      : ForecastBase,
     'conv_simple'   : Conv,
     'conv_hidden'   : Conv_CustomHiddenLayer,
