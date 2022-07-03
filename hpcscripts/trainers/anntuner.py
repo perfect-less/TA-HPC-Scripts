@@ -68,11 +68,14 @@ def run(tuner_id: str = None):
 
     for i in range( min(TUNING_CONF.PICK_MODEL_COUNTS, len(best_hps_list)) ):
         tf.keras.backend.clear_session()
+        train_data = windowG.train
+        val_data = windowG.val
+
         model = tuner.hypermodel.build(best_hps_list[i])
         history = TrainModel(
             model=model,
-            training_data=windowG.train,
-            eval_data=windowG.val,
+            training_data=train_data,
+            eval_data=val_data,
             epochs=G_PARAMS.TRAIN_EPOCHS,
             callbacks=G_PARAMS.CALLBACKS
         )
@@ -86,8 +89,8 @@ def run(tuner_id: str = None):
         hypermodel = tuner.hypermodel.build(best_hps_list[i])
         history = TrainModel(
             model=hypermodel,
-            training_data=windowG.train,
-            eval_data=windowG.val,
+            training_data=train_data,
+            eval_data=val_data,
             epochs=best_epoch,
             callbacks=G_PARAMS.CALLBACKS
         )
