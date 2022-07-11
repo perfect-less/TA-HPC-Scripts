@@ -87,7 +87,9 @@ def run(selected_index: int=None, optional_path: str=None):
     models_path = ph.GetModelsPath() if optional_path==None else optional_path
 
     model_path = SelectModelPrompt(models_path, selected_index)
-    model, _, _ = LoadModel(model_path)
+    model, _, modelsmeta = LoadModel(model_path)
+
+    G_PARAMS.SetParams(modelsmeta['param'])
 
     # List test files
     test_dir = ph.GetProcessedPath("Test")

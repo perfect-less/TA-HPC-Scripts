@@ -86,6 +86,10 @@ def CleanAndCompleteData(fname):
     # Calculate pitch-rate and alpha-rate
     flight_DF["theta_rate_rps"] = flight_DF["theta_rad"].diff().fillna(0, inplace=False)
     flight_DF["aoac_rate_rps"] = flight_DF["aoac_rad"].diff().fillna(0, inplace=False)
+
+    # Calculate tail and crosswind
+    flight_DF["tailwind_mps"] = flight_DF["ws_mps"] * np.cos(flight_DF["wdir_rad"] - flight_DF["psi_rad"])
+    flight_DF["crosswind_mps"] = flight_DF["ws_mps"] * np.sin(flight_DF["wdir_rad"] - flight_DF["psi_rad"])
     
 
     # Save to  CSV for documentation
