@@ -82,6 +82,10 @@ def CleanAndCompleteData(fname):
     flight_DF["N1s_rpm"] = (flight_DF["n11_rpm"] + flight_DF["n12_rpm"] + flight_DF["n13_rpm"] + flight_DF["n14_rpm"]) / 4
     flight_DF["fqty_kg"] = flight_DF["fqty_1_kg"] + flight_DF["fqty_2_kg"] + flight_DF["fqty_3_kg"] + flight_DF["fqty_4_kg"]
     flight_DF["flap_te_pos"] = flight_DF["flap_te_pos"] / 100
+
+    # Calculate pitch-rate and alpha-rate
+    flight_DF["theta_rate_rps"] = flight_DF["theta_rad"].diff().fillna(0, inplace=False)
+    flight_DF["aoac_rate_rps"] = flight_DF["aoac_rad"].diff().fillna(0, inplace=False)
     
 
     # Save to  CSV for documentation
