@@ -90,6 +90,9 @@ def CleanAndCompleteData(fname):
     # Calculate tail and crosswind
     flight_DF["tailwind_mps"] = flight_DF["ws_mps"] * np.cos(flight_DF["wdir_rad"] - flight_DF["psi_rad"])
     flight_DF["crosswind_mps"] = flight_DF["ws_mps"] * np.sin(flight_DF["wdir_rad"] - flight_DF["psi_rad"])
+
+    # Calculate error derivative
+    flight_DF["g_err_d_rad"] = flight_DF["gamma_error_rad"].diff().fillna(0, inplace=False)
     
 
     # Save to  CSV for documentation
@@ -102,6 +105,11 @@ def CleanAndCompleteData(fname):
 
     ind = flight_DF.loc[(flight_DF["time_s"] >= minT) & (flight_DF["time_s"] <= maxT)].index
     flight_DF = flight_DF.loc[ind,:].copy()
+
+    # Calcualte error integral
+    flight_DF["g_err_i_rad"]   = flight_DF["gamma_error_rad"].cumsum().interpolate()
+    flight_DF["g_err_ii_rad"]  = flight_DF["g_err_i_rad"].cumsum().interpolate()
+    flight_DF["g_err_iii_rad"] = flight_DF["g_err_ii_rad"].cumsum().interpolate()
     
     # Remove fParam
     flight_DF.drop("fParam", axis = 1, inplace= True)
