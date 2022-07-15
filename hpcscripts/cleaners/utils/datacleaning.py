@@ -91,6 +91,12 @@ def CleanAndCompleteData(fname):
     flight_DF["tailwind_mps"] = flight_DF["ws_mps"] * np.cos(flight_DF["wdir_rad"] - flight_DF["psi_rad"])
     flight_DF["crosswind_mps"] = flight_DF["ws_mps"] * np.sin(flight_DF["wdir_rad"] - flight_DF["psi_rad"])
 
+    # Flap Config, only 4: 25, 5: 30, and 6: 36 
+    flight_DF["flap_4_bool"] = flight_DF["flap_te_pos"].apply(lambda x: 1 if x >= 20 and x < 27 else 0)
+    flight_DF["flap_5_bool"] = flight_DF["flap_te_pos"].apply(lambda x: 1 if x >= 27 and x < 32 else 0)
+    flight_DF["flap_6_bool"] = flight_DF["flap_te_pos"].apply(lambda x: 1 if x >= 32 else 0)
+
+
     # Calculate error derivative
     flight_DF["g_err_d_rad"] = flight_DF["gamma_error_rad"].diff().fillna(0, inplace=False)
     
