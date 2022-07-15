@@ -115,6 +115,9 @@ def create_parser(parser: argparse.ArgumentParser):
     prs = parser
 
     # Command flag
+    prs.add_argument('-o', '--options', action="store_true",
+                    help = "List available command")
+
     prs.add_argument('-p', '--post', action="store_true",
                     help = "Run only post-process command")
 
@@ -145,6 +148,15 @@ def create_parser(parser: argparse.ArgumentParser):
     return prs
 
 def process_args(prs: argparse.ArgumentParser):
+
+    if prs.options:
+        print ("Available Command: ")
+        for i, key in enumerate (COMMAND_FLAG.keys()):
+            print ("\t {}. {}".format(i+1, key))
+        
+        print ("\ne.g -> ./hpcs --from select --until train")
+        exit(0)  
+
     if prs.tune and len(prs.tune) > 0:
         command_control['tuner_id'] = str(prs.tune[0])
         command_control['start'] = 'tune'
