@@ -79,7 +79,11 @@ def default_tuner():
         input_window_width  = input_window_width,
         label_window_width  = 1,
         label_shift         = 1,
-        feature_columns    = ['hralt_m', 'theta_rad', 'cas_mps', 'gs_dev_ddm', 'hdot_1_mps', 'elv_l_rad', 'N1s_rpm'],
+        feature_columns    = [
+                                'hralt_m', 'hdot_1_mps', 'theta_rad', 'cas_mps', 
+                                'gamma_error_rad', 'tailwind_mps', # 'crosswind_mps'
+                                'flap_4_bool', 'flap_5_bool', 'flap_6_bool'
+                            ],
         seq_labels         = ['elv_l_rad', 'N1s_rpm'],
         use_residual_wrap  = False,
 
