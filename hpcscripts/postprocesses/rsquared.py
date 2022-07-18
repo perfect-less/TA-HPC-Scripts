@@ -1,6 +1,7 @@
 """Calculating rsquared for Models in Data direcory"""
 
 import os
+from math import pi
 from typing import List
 
 import numpy as np
@@ -25,6 +26,8 @@ def CalculateRSquared(test_files: List[str], model: keras.Model, norm_param):
     for label in labels:
         for metric in ["r2", "mae", "mse"]:
             columns.append("{}_{}".format(metric, label))
+            if label.endswith("rad") and metric != "mse":
+                columns.append("{}_{}".format(metric, label.removesuffix("rad") + "deg"))
 
     windowG = CreateWindowGenerator(
                     train_list=test_files,
@@ -66,10 +69,22 @@ def CalculateRSquared(test_files: List[str], model: keras.Model, norm_param):
                 )
             mse = float(mse)
 
+            # Convert to degrees
+            if label.endswith("rad"):
+                r2_deg  = r2  * 180/pi
+                mae_deg = mae * 180/pi
+
             # Apending files r2, MAE, and MSE per label
-            row_list.append(r2)
-            row_list.append(mae)
-            row_list.append(mse)
+            if label.endswith("rad"):
+                row_list.append(r2)
+                row_list.append(r2_deg)
+                row_list.append(mae)
+                row_list.append(mae_deg)
+                row_list.append(mse)
+            else:
+                row_list.append(r2)
+                row_list.append(mae)
+                row_list.append(mse)
         r2_list.append(row_list)
 
     r2_df = pd.DataFrame(r2_list, columns=columns)
