@@ -26,7 +26,7 @@ def CalculateRSquared(test_files: List[str], model: keras.Model, norm_param):
     for label in labels:
         for metric in ["r2", "mae", "mse"]:
             columns.append("{}_{}".format(metric, label))
-            if label.endswith("rad") and metric != "mse":
+            if label.endswith("rad") and metric == "mae":
                 columns.append("{}_{}".format(metric, label.removesuffix("rad") + "deg"))
 
     windowG = CreateWindowGenerator(
@@ -71,13 +71,11 @@ def CalculateRSquared(test_files: List[str], model: keras.Model, norm_param):
 
             # Convert to degrees
             if label.endswith("rad"):
-                r2_deg  = r2  * 180/pi
                 mae_deg = mae * 180/pi
 
             # Apending files r2, MAE, and MSE per label
             if label.endswith("rad"):
                 row_list.append(r2)
-                row_list.append(r2_deg)
                 row_list.append(mae)
                 row_list.append(mae_deg)
                 row_list.append(mse)
