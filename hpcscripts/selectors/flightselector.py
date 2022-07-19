@@ -66,18 +66,27 @@ def GatherEmptyElevatorIndexes(flight_DFs: List[pd.DataFrame], unusable_indexes:
         if (abs(flight_DF["elv_l_rad"].diff().std(axis=0)) <= 0.0008):
             unusable_indexes.append(i)
             empty_count += 1
+            continue
 
         if flight_DF.shape[0] == 0:
             unusable_indexes.append(i)
             empty_count += 1
+            continue
         
         if flight_DF.shape[0] < 200: # temp
             unusable_indexes.append(i)
             empty_count += 1
+            continue
             
         if flight_DF.shape[0] > 0 and np.isnan(flight_DF.loc[random.randint(0, flight_DF.shape[0]-1) , "elv_l_rad"]):
             unusable_indexes.append(i)
             empty_count += 1
+            continue
+
+        if flight_DF["elv_l_rad"].min() > 0.0:
+            unusable_indexes.append(i)
+            empty_count += 1
+            continue
     
     print ("empty count: {}".format(empty_count))
     return unusable_indexes
@@ -96,10 +105,12 @@ def GatherUnusableBasedOnGSAndLocalizer(flight_DFs: List[pd.DataFrame], unusable
         if (flight_DF.lat_rad.max() > 35.047973 * deg2rad):
             unusable_indexes.append(i)
             unusable_count += 1
+            continue
 
         if (flight_DF.loc[flight_DF.shape[0]-1, "lat_rad"] < 35.012 * deg2rad):
             unusable_indexes.append(i)
             unusable_count += 1
+            continue
 
     print ("unusable based on glideslope and localizer: {}".format(unusable_count))
     return unusable_indexes
