@@ -226,12 +226,12 @@ def mixed_tuner():
     def model_builder(hp):
         model = keras.Sequential()
 
-        early_layers = hp.Int("early_layers", 1, 2)
+        early_layers = hp.Int(f"early_layers", 1, 2)
         padd = 'valid'
 
         if early_layers > 0:
             for i in range (early_layers):
-                kind = hp.Choice("early_layer_{i}", ["lstm", "conv1d"])
+                kind = hp.Choice(f"early_layer_{i}", ["lstm", "conv1d"])
                 ret_seq = not (i == (early_layers - 1))
                 if ret_seq:
                     padd = 'same'
@@ -245,12 +245,14 @@ def mixed_tuner():
                         )
                     )
                 else:
-                    tf.keras.layers.Bidirectional(
+                    model.add(
+                        tf.keras.layers.Bidirectional(
                             tf.keras.layers.LSTM(
                                 hp.Int(f"lstm_units_{i}", min_value=16, max_value=128, step=16),
                                 return_sequences=ret_seq
                             )
                         )
+                    )
         else:
             model.add(tf.keras.layers.Flatten())
         
