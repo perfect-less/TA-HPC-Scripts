@@ -180,6 +180,8 @@ def conv_tuner():
                         activation='relu'                        
                     )
                 )
+                if not ret_seq:
+                    model.add(tf.keras.layers.Flatten())
         else:
             model.add(tf.keras.layers.Flatten())
         
@@ -235,6 +237,7 @@ def mixed_tuner():
                 ret_seq = not (i == (early_layers - 1))
                 if ret_seq:
                     padd = 'same'
+
                 if kind == 'conv1d':
                     model.add(
                         tf.keras.layers.Conv1D(
@@ -253,6 +256,9 @@ def mixed_tuner():
                             )
                         )
                     )
+
+                if not ret_seq and kind == 'conv1d':
+                    model.add(tf.keras.layers.Flatten())
         else:
             model.add(tf.keras.layers.Flatten())
         
