@@ -169,15 +169,20 @@ def conv_tuner():
         model = keras.Sequential()
 
         conv_layers = hp.Int("conv_layers", 1, 2)
+        padd = 'valid'
 
         if conv_layers > 0:
             for i in range (conv_layers):
                 ret_seq = not (i == (conv_layers - 1))
+                if ret_seq:
+                    padd = 'same'
+
                 model.add(
                     tf.keras.layers.Conv1D(
                         hp.Int(f"conv_filters_{i}", min_value=16, max_value=128, step=16),
                         kernel_size=hp.Int(f"conv_kernel_{i}", min_value=3, max_value=8, step=1),
-                        activation='relu'                        
+                        activation='relu',
+                        padding=padd  
                     )
                 )
                 if not ret_seq:
