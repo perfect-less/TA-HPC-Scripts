@@ -7,10 +7,11 @@ from hpcscripts.option import globalparams as G_PARAMS
 
 FEATURES_COLUMNS = [
             'hralt_m', 'hdot_1_mps', 'theta_rad', 'cas_mps', 
-            'gamma_error_rad', 'tailwind_mps', 'g_err_d_rad', # 'crosswind_mps',
+            'gamma_error_rad', 'tailwind_mps', 'g_err_d_rad', # 'g_err_i_rad', # 'crosswind_mps',
             'flap_4_bool', 'flap_5_bool', 'flap_6_bool',
             # 'N1s_rpm',
         ]
+LABELS = ['elv_l_rad', 'N1s_rpm']
 
 def lstm_tuner():
     
@@ -87,7 +88,7 @@ def lstm_tuner():
         label_window_width  = 1,
         label_shift         = 1,
         feature_columns    = FEATURES_COLUMNS,
-        seq_labels         = ['elv_l_rad', 'N1s_rpm'],
+        seq_labels         = LABELS,
         use_residual_wrap  = False,
 
         model=model_builder
@@ -99,34 +100,36 @@ def minimal_tuner():
 
     def model_builder(hp):
         model = keras.Sequential()
+        model.add(tf.keras.layers.Flatten())
 
-        lstm_layers = hp.Int("lstm_layers", 0, 1)
-        is_bidirectional = hp.Boolean("is_bidirectional")
+        # lstm_layers = hp.Int("lstm_layers", 0, 1)
+        # is_bidirectional = hp.Boolean("is_bidirectional")
 
-        if lstm_layers > 0:
-            for i in range (lstm_layers):
-                ret_seq = not (i == (lstm_layers - 1))
-                if is_bidirectional:
-                    model.add(
-                        tf.keras.layers.Bidirectional(
-                            tf.keras.layers.LSTM(
-                                hp.Int(f"lstm_units_{i}", min_value=16, max_value=128, step=16),
-                                return_sequences=ret_seq
-                            )
-                        )
-                    )
-                else:
-                    model.add(
-                        tf.keras.layers.LSTM(
-                            hp.Int(f"lstm_units_{i}", min_value=16, max_value=128, step=16),
-                            return_sequences=ret_seq
-                        )
-                    )
-        else:
-            model.add(tf.keras.layers.Flatten())
+        # if lstm_layers > 0:
+        #     for i in range (lstm_layers):
+        #         ret_seq = not (i == (lstm_layers - 1))
+        #         if is_bidirectional:
+        #             model.add(
+        #                 tf.keras.layers.Bidirectional(
+        #                     tf.keras.layers.LSTM(
+        #                         hp.Int(f"lstm_units_{i}", min_value=16, max_value=128, step=16),
+        #                         return_sequences=ret_seq
+        #                     )
+        #                 )
+        #             )
+        #         else:
+        #             model.add(
+        #                 tf.keras.layers.LSTM(
+        #                     hp.Int(f"lstm_units_{i}", min_value=16, max_value=128, step=16),
+        #                     return_sequences=ret_seq
+        #                 )
+        #             )
+        # else:
+        #     model.add(tf.keras.layers.Flatten())
         
+
         # Tune the number of layers.
-        for i in range(hp.Int("num_layers", 1, 2)):
+        for i in range(hp.Int("num_layers", 1, 3)):
             model.add(
                 keras.layers.Dense(
                     # Tune number of units separately.
@@ -155,7 +158,7 @@ def minimal_tuner():
         label_window_width  = 1,
         label_shift         = 1,
         feature_columns    = FEATURES_COLUMNS,
-        seq_labels         = ['elv_l_rad', 'N1s_rpm'],
+        seq_labels         = LABELS,
         use_residual_wrap  = False,
 
         model=model_builder
@@ -220,7 +223,7 @@ def conv_tuner():
         label_window_width  = 1,
         label_shift         = 1,
         feature_columns    = FEATURES_COLUMNS,
-        seq_labels         = ['elv_l_rad', 'N1s_rpm'],
+        seq_labels         = LABELS,
         use_residual_wrap  = False,
 
         model=model_builder
@@ -297,7 +300,7 @@ def mixed_tuner():
         label_window_width  = 1,
         label_shift         = 1,
         feature_columns    = FEATURES_COLUMNS,
-        seq_labels         = ['elv_l_rad', 'N1s_rpm'],
+        seq_labels         = LABELS,
         use_residual_wrap  = False,
 
         model=model_builder
