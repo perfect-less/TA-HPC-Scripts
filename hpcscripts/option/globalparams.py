@@ -62,7 +62,11 @@ METRICS = [
             keras.metrics.MeanSquaredError(), 
             keras.metrics.MeanAbsoluteError()
         ]
-FEATURE_COLUMNS = ['hralt_m', 'theta_rad', 'cas_mps', 'gamma_error_rad', 'hdot_1_mps']
+# FEATURE_COLUMNS = ['hralt_m', 'theta_rad', 'cas_mps', 'gamma_error_rad', 'hdot_1_mps']
+FEATURE_COLUMNS =[
+            'hralt_m', 'hdot_1_mps', 'theta_rad', 'cas_mps', 
+            'gamma_error_rad', 'tailwind_mps', 'g_err_d_rad',
+        ]
 SEQUENTIAL_LABELS = ['elv_l_rad', 'N1s_rpm']
 CALLBACKS = [early_stop]
 TRAIN_EPOCHS = 50

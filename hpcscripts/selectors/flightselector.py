@@ -27,8 +27,11 @@ def run ():
     # Read Files to List of DataFrames
     flight_DFs = ReadFiles(flight_files, read_dir)
 
-    # Gathering indexes of files with empty data
+    # Gathering indexes of files with empty elv data
     unusable_indexes = GatherEmptyElevatorIndexes(flight_DFs, unusable_indexes)
+
+    # Gathering indexes of files with empty aileron data
+    unusable_indexes = GatherEmptyAileronIndexes(flight_DFs, unusable_indexes)
 
     # Gathering indexes of files with out of range data
     unusable_indexes = GatherUnusableBasedOnGSAndLocalizer(flight_DFs, unusable_indexes)
@@ -73,22 +76,57 @@ def GatherEmptyElevatorIndexes(flight_DFs: List[pd.DataFrame], unusable_indexes:
             empty_count += 1
             continue
         
-        if flight_DF.shape[0] < 200: # temp
-            unusable_indexes.append(i)
-            empty_count += 1
-            continue
+        # if flight_DF.shape[0] < 200: # temp
+        #     unusable_indexes.append(i)
+        #     empty_count += 1
+        #     continue
             
         if flight_DF.shape[0] > 0 and np.isnan(flight_DF.loc[random.randint(0, flight_DF.shape[0]-1) , "elv_l_rad"]):
             unusable_indexes.append(i)
             empty_count += 1
             continue
 
-        if flight_DF["elv_l_rad"].min() > 0.0:
+        # if flight_DF["elv_l_rad"].min() > 0.0:
+        #     unusable_indexes.append(i)
+        #     empty_count += 1
+        #     continue
+    
+    print ("unusable based on elevator: {}".format(empty_count))
+    return unusable_indexes
+
+def GatherEmptyAileronIndexes(flight_DFs: List[pd.DataFrame], unusable_indexes: List[int]):
+    empty_count = 0
+
+    for i, flight_DF in enumerate(flight_DFs):
+        flight_DF['ail_l_rad'].replace('', np.nan, inplace=True)
+        flight_DF['ail_r_rad'].replace('', np.nan, inplace=True)
+
+        if (abs(flight_DF["ail_l_rad"].diff().std(axis=0)) <= 0.0008):
             unusable_indexes.append(i)
             empty_count += 1
             continue
     
-    print ("empty count: {}".format(empty_count))
+        if (abs(flight_DF["ail_r_rad"].diff().std(axis=0)) <= 0.0008):
+            unusable_indexes.append(i)
+            empty_count += 1
+            continue
+
+        if flight_DF.shape[0] == 0:
+            unusable_indexes.append(i)
+            empty_count += 1
+            continue
+            
+        if flight_DF.shape[0] > 0 and np.isnan(flight_DF.loc[random.randint(0, flight_DF.shape[0]-1) , "ail_l_rad"]):
+            unusable_indexes.append(i)
+            empty_count += 1
+            continue
+
+        if flight_DF.shape[0] > 0 and np.isnan(flight_DF.loc[random.randint(0, flight_DF.shape[0]-1) , "ail_r_rad"]):
+            unusable_indexes.append(i)
+            empty_count += 1
+            continue
+    
+    print ("unusable based on aileron: {}".format(empty_count))
     return unusable_indexes
 
 def GatherUnusableBasedOnGSAndLocalizer(flight_DFs: List[pd.DataFrame], unusable_indexes: List[int]):

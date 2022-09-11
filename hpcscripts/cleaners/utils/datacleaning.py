@@ -35,7 +35,7 @@ def ReSampling(fname):
 
     fparam_np = np.empty([new_length,1])
     fparam_np[0,0] = flight_DF.loc[trace_index, "time_s"]
-    fparam_np[1,0] = flight_DF.loc[touchdown_index+1, "time_s"] - 50 #15 # minus 15 seconds
+    fparam_np[1,0] = flight_DF.loc[touchdown_index+1, "time_s"] - 15 #50 #15 # minus 15 seconds
 
     # ReIndexing the data
     flight_DF, touchdown_index = ReIndexFlightData(flight_DF, target_frequency, touchdown_index, selected_columns)
@@ -95,6 +95,10 @@ def CleanAndCompleteData(fname):
     flight_DF["flap_4_bool"] = flight_DF["flap_te_pos"].apply(lambda x: 1 if x >= 20 and x < 27 else 0)
     flight_DF["flap_5_bool"] = flight_DF["flap_te_pos"].apply(lambda x: 1 if x >= 27 and x < 32 else 0)
     flight_DF["flap_6_bool"] = flight_DF["flap_te_pos"].apply(lambda x: 1 if x >= 32 else 0)
+
+    # Combined Aileron ail_lr_rad
+    flight_DF['ail_lr_rad'] = (flight_DF['ail_l_rad'] + flight_DF['ail_r_rad'])/2
+
 
 
     # Calculate error derivative

@@ -115,11 +115,59 @@ def Simple_Dense():
     model = AddDenseHiddenLayer(sdense, sequential_hidden_l)
 
     return ModelDefBuilder(
-        input_window_width=1,
+        feature_columns=['hralt_m', 'theta_rad', 'cas_mps', 'gamma_error_rad', 'hdot_1_mps'],
+        input_window_width=5,
         label_window_width=1,
         label_shift=0,
 
         sequential_hidden_l=sequential_hidden_l,
+
+        model=sdense
+    )
+
+def Simple_Dense_Ail():
+
+    sequential_hidden_l = [20]
+
+    sdense = tf.keras.Sequential([
+        tf.keras.layers.Flatten()
+    ])
+
+    model = AddDenseHiddenLayer(sdense, sequential_hidden_l)
+
+    return ModelDefBuilder(
+        feature_columns=['hralt_m', 'phi_rad', 'loc_dev_ddm'],
+        seq_labels=['ail_lr_rad'],
+        input_window_width=10,
+        label_window_width=1,
+        label_shift=0,
+
+        sequential_hidden_l=sequential_hidden_l,
+
+        model=sdense
+    )
+
+def MinimalBatchNorm_Dense():
+
+    sequential_hidden_l = [22, 2]
+
+    sdense = tf.keras.Sequential([
+        tf.keras.layers.Flatten(),
+        tf.keras.layers.BatchNormalization(),
+        tf.keras.layers.Dense(22, activation='relu'),
+        # tf.keras.layers.BatchNormalization(),
+        tf.keras.layers.Dropout(0.2),
+        tf.keras.layers.Dense(2, activation='relu')
+    ])
+
+    # model = AddDenseHiddenLayer(sdense, sequential_hidden_l)
+
+    return ModelDefBuilder(
+        input_window_width=10,
+        label_window_width=1,
+        label_shift=0,
+
+        #sequential_hidden_l=sequential_hidden_l,
 
         model=sdense
     )
@@ -254,10 +302,13 @@ MODEL_DEFINITIONS = {
     'default'       : Linear,
     'linear'        : Linear,
     'simp_dense'    : Simple_Dense,
+    'simp_dense_ail': Simple_Dense_Ail,
     'baseline'      : ForecastBase,
     'conv_simple'   : Conv,
     'conv_hidden'   : Conv_CustomHiddenLayer,
     'lstm_hidden'   : LSTM_CustomHiddenLayer,
     'simp_hidden'   : Simple_CustomHiddenLayer,
-    'wrap_hidden'   : Wrap_CustomHiddenLayer
+    'wrap_hidden'   : Wrap_CustomHiddenLayer,
+    'minim_batchnorm': MinimalBatchNorm_Dense,
+
 }

@@ -1,1 +1,1 @@
-model_id = 'default'
+model_id = 'simp_dense'

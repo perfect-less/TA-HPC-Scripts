@@ -25,6 +25,14 @@ def CleanColumns(flight_DF):
             if column_name == "elv_r_rad":
                 # Just Delete all the out of range elevator param.
                 flight_DF.loc[ (flight_DF[column_name]) < 50 * math.pi / 180 , column_name ] = None
+
+            if column_name == "ail_l_rad":
+                # Just Delete all the out of range aileron param.
+                flight_DF.loc[ (flight_DF[column_name]) < 60 * math.pi / 180 , column_name ] = None
+                
+            if column_name == "ail_r_rad":
+                # Just Delete all the out of range aileron param.
+                flight_DF.loc[ (flight_DF[column_name]) < 60 * math.pi / 180 , column_name ] = None
                 
 
             flight_DF[column_name] = flight_DF[column_name].interpolate()

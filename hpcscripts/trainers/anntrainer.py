@@ -79,7 +79,8 @@ def CreateANNModel():
     # Add output layer
     model.add(keras.layers.Dense(
                     units=len(G_PARAMS.SEQUENTIAL_LABELS)*G_PARAMS.LABEL_WINDOW_WIDTH,
-                    kernel_initializer=tf.initializers.zeros()
+                    kernel_initializer=tf.initializers.zeros(),
+                    name='dense_for_reshaping'
             ))
     model.add(keras.layers.Reshape([G_PARAMS.LABEL_WINDOW_WIDTH, len (G_PARAMS.SEQUENTIAL_LABELS)]))
 

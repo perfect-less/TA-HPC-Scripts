@@ -8,10 +8,9 @@ from hpcscripts.option import globalparams as G_PARAMS
 FEATURES_COLUMNS = [
             'hralt_m', 'hdot_1_mps', 'theta_rad', 'cas_mps', 
             'gamma_error_rad', 'tailwind_mps', 'g_err_d_rad',
-            'flap_4_bool', 'flap_5_bool', 'flap_6_bool',
         ]
 LABELS = ['elv_l_rad', 'N1s_rpm']
-INPUT_WINDOW_WIDTH = 10
+INPUT_WINDOW_WIDTH = 20
 
 
 def minimal_tuner():
