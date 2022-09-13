@@ -147,6 +147,153 @@ def Simple_Dense_Ail():
         model=sdense
     )
 
+## BESTs
+
+def Best_Dense_Min_1():
+
+    sequential_hidden_l = [4, 16]
+
+    sdense = tf.keras.Sequential([
+        tf.keras.layers.Flatten()
+    ])
+
+    model = AddDenseHiddenLayer(sdense, sequential_hidden_l)
+
+    return ModelDefBuilder(
+        feature_columns=[
+            'hralt_m', 'hdot_1_mps', 'theta_rad', 'cas_mps', 'gamma_error_rad'],
+        seq_labels=['elv_l_rad', 'N1s_rpm'],
+        input_window_width=1,
+        label_window_width=1,
+        label_shift=0,
+
+        sequential_hidden_l=sequential_hidden_l,
+
+        model=sdense
+    )
+
+def Best_Dense_Min_10():
+
+    sequential_hidden_l = [4, 16]
+
+    sdense = tf.keras.Sequential([
+        tf.keras.layers.Flatten()
+    ])
+
+    model = AddDenseHiddenLayer(sdense, sequential_hidden_l)
+
+    return ModelDefBuilder(
+        feature_columns=[
+            'hralt_m', 'hdot_1_mps', 'theta_rad', 'cas_mps', 'gamma_error_rad'],
+        seq_labels=['elv_l_rad', 'N1s_rpm'],
+        input_window_width=10,
+        label_window_width=1,
+        label_shift=0,
+
+        sequential_hidden_l=sequential_hidden_l,
+
+        model=sdense
+    )
+
+def Best_Dense_Min_20():
+
+    sequential_hidden_l = [4, 16]
+
+    sdense = tf.keras.Sequential([
+        tf.keras.layers.Flatten()
+    ])
+
+    model = AddDenseHiddenLayer(sdense, sequential_hidden_l)
+
+    return ModelDefBuilder(
+        feature_columns=[
+            'hralt_m', 'hdot_1_mps', 'theta_rad', 'cas_mps', 'gamma_error_rad'],
+        seq_labels=['elv_l_rad', 'N1s_rpm'],
+        input_window_width=20,
+        label_window_width=1,
+        label_shift=0,
+
+        sequential_hidden_l=sequential_hidden_l,
+
+        model=sdense
+    )
+
+
+def Best_Dense_Comp_1():
+
+    sequential_hidden_l = [4, 16]
+
+    sdense = tf.keras.Sequential([
+        tf.keras.layers.Flatten()
+    ])
+
+    model = AddDenseHiddenLayer(sdense, sequential_hidden_l)
+
+    return ModelDefBuilder(
+        feature_columns=[
+            'hralt_m', 'hdot_1_mps', 'theta_rad', 'cas_mps', 'gamma_error_rad',
+            'tailwind_mps', 'g_err_d_rad'],
+        seq_labels=['elv_l_rad', 'N1s_rpm'],
+        input_window_width=1,
+        label_window_width=1,
+        label_shift=0,
+
+        sequential_hidden_l=sequential_hidden_l,
+
+        model=sdense
+    )
+
+def Best_Dense_Comp_10():
+
+    sequential_hidden_l = [4, 16]
+
+    sdense = tf.keras.Sequential([
+        tf.keras.layers.Flatten()
+    ])
+
+    model = AddDenseHiddenLayer(sdense, sequential_hidden_l)
+
+    return ModelDefBuilder(
+        feature_columns=[
+            'hralt_m', 'hdot_1_mps', 'theta_rad', 'cas_mps', 'gamma_error_rad',
+            'tailwind_mps', 'g_err_d_rad'],
+        seq_labels=['elv_l_rad', 'N1s_rpm'],
+        input_window_width=10,
+        label_window_width=1,
+        label_shift=0,
+
+        sequential_hidden_l=sequential_hidden_l,
+
+        model=sdense
+    )
+
+def Best_Dense_Comp_20():
+
+    sequential_hidden_l = [4, 16]
+
+    sdense = tf.keras.Sequential([
+        tf.keras.layers.Flatten()
+    ])
+
+    model = AddDenseHiddenLayer(sdense, sequential_hidden_l)
+
+    return ModelDefBuilder(
+        feature_columns=[
+            'hralt_m', 'hdot_1_mps', 'theta_rad', 'cas_mps', 'gamma_error_rad',
+            'tailwind_mps', 'g_err_d_rad'],
+        seq_labels=['elv_l_rad', 'N1s_rpm'],
+        input_window_width=20,
+        label_window_width=1,
+        label_shift=0,
+
+        sequential_hidden_l=sequential_hidden_l,
+
+        model=sdense
+    )
+
+
+
+
 def MinimalBatchNorm_Dense():
 
     sequential_hidden_l = [22, 2]
@@ -310,5 +457,13 @@ MODEL_DEFINITIONS = {
     'simp_hidden'   : Simple_CustomHiddenLayer,
     'wrap_hidden'   : Wrap_CustomHiddenLayer,
     'minim_batchnorm': MinimalBatchNorm_Dense,
+
+    'best_e_min_1'  : Best_Dense_Min_1,
+    'best_e_min_10' : Best_Dense_Min_10,
+    'best_e_min_20' : Best_Dense_Min_20,
+
+    'best_e_comp_1' : Best_Dense_Comp_1,
+    'best_e_comp_10': Best_Dense_Comp_10,
+    'best_e_comp_20': Best_Dense_Comp_20,
 
 }
