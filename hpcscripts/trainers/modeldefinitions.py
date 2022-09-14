@@ -292,6 +292,53 @@ def Best_Dense_Comp_20():
     )
 
 
+def Best_Ail_1():
+    sequential_hidden_l = [2, 30, 26]
+
+    sdense = tf.keras.Sequential([
+        tf.keras.layers.Flatten()
+    ])
+
+    model = AddDenseHiddenLayer(sdense, sequential_hidden_l)
+    model.add(tf.keras.layers.Dropout(0.5))
+
+    return ModelDefBuilder(
+        feature_columns=[
+            'phi_rad'],
+        seq_labels=['ail_lr_rad'],
+        input_window_width=20,
+        label_window_width=1,
+        label_shift=0,
+
+        sequential_hidden_l=sequential_hidden_l,
+
+        model=sdense
+    )
+
+def Best_Ail_10():
+    sequential_hidden_l = [12, 30]
+
+    sdense = tf.keras.Sequential([
+        tf.keras.layers.Flatten(),
+        tf.keras.layers.Dense(28, activation='relu'),
+        tf.keras.layers.Dropout(0.3)
+    ])
+
+    model = AddDenseHiddenLayer(sdense, sequential_hidden_l)
+
+    return ModelDefBuilder(
+        feature_columns=[
+            'phi_rad'],
+        seq_labels=['ail_lr_rad'],
+        input_window_width=20,
+        label_window_width=1,
+        label_shift=0,
+
+        sequential_hidden_l=sequential_hidden_l,
+
+        model=sdense
+    )
+
 
 
 def MinimalBatchNorm_Dense():
@@ -465,5 +512,8 @@ MODEL_DEFINITIONS = {
     'best_e_comp_1' : Best_Dense_Comp_1,
     'best_e_comp_10': Best_Dense_Comp_10,
     'best_e_comp_20': Best_Dense_Comp_20,
+
+    'best_a_1'      : Best_Ail_1,
+    'best_a_10'     : Best_Ail_10,
 
 }
