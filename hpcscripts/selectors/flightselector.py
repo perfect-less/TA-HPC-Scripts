@@ -28,10 +28,16 @@ def run ():
     flight_DFs = ReadFiles(flight_files, read_dir)
 
     # Gathering indexes of files with empty elv data
-    unusable_indexes = GatherEmptyElevatorIndexes(flight_DFs, unusable_indexes)
+    # unusable_indexes = GatherEmptyElevatorIndexes(flight_DFs, unusable_indexes)
+
+    # Gathering indexes of files with empty ctrl. column data
+    unusable_indexes = GatherEmptyCtrlColumnIndexes(flight_DFs, unusable_indexes)
+
+    # Gathering indexes of files with empty ctrl. wheel data
+    unusable_indexes = GatherEmptyCtrlWheelIndexes(flight_DFs, unusable_indexes)
 
     # Gathering indexes of files with empty aileron data
-    unusable_indexes = GatherEmptyAileronIndexes(flight_DFs, unusable_indexes)
+    #unusable_indexes = GatherEmptyAileronIndexes(flight_DFs, unusable_indexes)
 
     # Gathering indexes of files with out of range data
     unusable_indexes = GatherUnusableBasedOnGSAndLocalizer(flight_DFs, unusable_indexes)
@@ -92,6 +98,76 @@ def GatherEmptyElevatorIndexes(flight_DFs: List[pd.DataFrame], unusable_indexes:
         #     continue
     
     print ("unusable based on elevator: {}".format(empty_count))
+    return unusable_indexes
+
+def GatherEmptyCtrlColumnIndexes(flight_DFs: List[pd.DataFrame], unusable_indexes: List[int]):
+    empty_count = 0
+
+    for i, flight_DF in enumerate(flight_DFs):
+        flight_DF['ctrlcolumn_pos_capt'].replace('', np.nan, inplace=True)
+        flight_DF['ctrlcolumn_pos_capt'].replace('', np.nan, inplace=True)
+
+        if (abs(flight_DF["ctrlcolumn_pos_capt"].diff().mean(axis=0)) <= 3):
+            unusable_indexes.append(i)
+            empty_count += 1
+            continue
+    
+        if (abs(flight_DF["ctrlcolumn_pos_capt"].diff().std(axis=0)) <= 0.5):
+            unusable_indexes.append(i)
+            empty_count += 1
+            continue
+
+        if flight_DF.shape[0] == 0:
+            unusable_indexes.append(i)
+            empty_count += 1
+            continue
+            
+        if flight_DF.shape[0] > 0 and np.isnan(flight_DF.loc[random.randint(0, flight_DF.shape[0]-1) , "ctrlcolumn_pos_capt"]):
+            unusable_indexes.append(i)
+            empty_count += 1
+            continue
+
+        if flight_DF.shape[0] > 0 and np.isnan(flight_DF.loc[random.randint(0, flight_DF.shape[0]-1) , "ctrlcolumn_pos_capt"]):
+            unusable_indexes.append(i)
+            empty_count += 1
+            continue
+    
+    print ("unusable based on aileron: {}".format(empty_count))
+    return unusable_indexes
+
+def GatherEmptyCtrlWheelIndexes(flight_DFs: List[pd.DataFrame], unusable_indexes: List[int]):
+    empty_count = 0
+
+    for i, flight_DF in enumerate(flight_DFs):
+        flight_DF['ctrlwheel_pos_capt'].replace('', np.nan, inplace=True)
+        flight_DF['ctrlwheel_pos_capt'].replace('', np.nan, inplace=True)
+
+        if (abs(flight_DF["ctrlwheel_pos_capt"].diff().mean(axis=0)) <= 3):
+            unusable_indexes.append(i)
+            empty_count += 1
+            continue
+    
+        if (abs(flight_DF["ctrlwheel_pos_capt"].diff().std(axis=0)) <= 0.5):
+            unusable_indexes.append(i)
+            empty_count += 1
+            continue
+
+        if flight_DF.shape[0] == 0:
+            unusable_indexes.append(i)
+            empty_count += 1
+            continue
+            
+        if flight_DF.shape[0] > 0 and np.isnan(flight_DF.loc[random.randint(0, flight_DF.shape[0]-1) , "ctrlwheel_pos_capt"]):
+            unusable_indexes.append(i)
+            empty_count += 1
+            continue
+
+        if flight_DF.shape[0] > 0 and np.isnan(flight_DF.loc[random.randint(0, flight_DF.shape[0]-1) , "ctrlwheel_pos_capt"]):
+            unusable_indexes.append(i)
+            empty_count += 1
+            continue
+    
+    print ("unusable based on aileron: {}".format(empty_count))
     return unusable_indexes
 
 def GatherEmptyAileronIndexes(flight_DFs: List[pd.DataFrame], unusable_indexes: List[int]):

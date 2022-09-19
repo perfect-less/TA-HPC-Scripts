@@ -1,1 +1,1 @@
-model_id = 'simp_dense'
+model_id = 't_simp_1'

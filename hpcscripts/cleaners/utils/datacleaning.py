@@ -80,6 +80,7 @@ def CleanAndCompleteData(fname):
 
     # Calculate average 'N1', total fqty, and 'flap position'    fqty_1_kg fqty_2_kg fqty_3_kg fqty_4_kg
     flight_DF["N1s_rpm"] = (flight_DF["n11_rpm"] + flight_DF["n12_rpm"] + flight_DF["n13_rpm"] + flight_DF["n14_rpm"]) / 4
+    flight_DF["pla_mean_rad"] = (flight_DF["pla_1_rad"] + flight_DF["pla_2_rad"] + flight_DF["pla_3_rad"] + flight_DF["pla_4_rad"]) / 4
     flight_DF["fqty_kg"] = flight_DF["fqty_1_kg"] + flight_DF["fqty_2_kg"] + flight_DF["fqty_3_kg"] + flight_DF["fqty_4_kg"]
     flight_DF["flap_te_pos"] = flight_DF["flap_te_pos"] / 100
 

@@ -149,6 +149,97 @@ def Simple_Dense_Ail():
 
 ## BESTs
 
+def Elv_Simp_1():
+    sequential_hidden_l = [4, 16]
+
+    sdense = tf.keras.Sequential([
+        tf.keras.layers.Flatten()
+    ])
+
+    model = AddDenseHiddenLayer(sdense, sequential_hidden_l)
+
+    return ModelDefBuilder(
+        feature_columns=[
+            'gs_dev_ddm', 'theta_rad'],
+        seq_labels=['ctrlcolumn_pos_capt'],
+        input_window_width=1,
+        label_window_width=1,
+        label_shift=0,
+
+        sequential_hidden_l=sequential_hidden_l,
+
+        model=sdense
+    )
+
+def Elv_Simp_10():
+    sequential_hidden_l = [4, 16]
+
+    sdense = tf.keras.Sequential([
+        tf.keras.layers.Flatten()
+    ])
+
+    model = AddDenseHiddenLayer(sdense, sequential_hidden_l)
+
+    return ModelDefBuilder(
+        feature_columns=[
+            'gs_dev_ddm', 'theta_rad'],
+        seq_labels=['ctrlcolumn_pos_capt'],
+        input_window_width=10,
+        label_window_width=1,
+        label_shift=0,
+
+        sequential_hidden_l=sequential_hidden_l,
+
+        model=sdense
+    )
+
+def Ail_Simp_1():
+    sequential_hidden_l = [4, 16]
+
+    sdense = tf.keras.Sequential([
+        tf.keras.layers.Flatten()
+    ])
+
+    model = AddDenseHiddenLayer(sdense, sequential_hidden_l)
+
+    return ModelDefBuilder(
+        feature_columns=[
+            'loc_dev_ddm', 'phi_rad'],
+        seq_labels=['ctrlwheel_pos_capt'],
+        input_window_width=1,
+        label_window_width=1,
+        label_shift=0,
+
+        sequential_hidden_l=sequential_hidden_l,
+
+        model=sdense
+    )
+
+def Thr_Simp_1():
+    sequential_hidden_l = [4, 16]
+
+    sdense = tf.keras.Sequential([
+        tf.keras.layers.Flatten()
+    ])
+
+    model = AddDenseHiddenLayer(sdense, sequential_hidden_l)
+
+    return ModelDefBuilder(
+        feature_columns=[
+            'hralt_m', 'tas_mps'],
+        seq_labels=['pla_mean_rad'],
+        input_window_width=1,
+        label_window_width=1,
+        label_shift=0,
+
+        sequential_hidden_l=sequential_hidden_l,
+
+        model=sdense
+    )
+
+
+
+
 def Best_Dense_Min_1():
 
     sequential_hidden_l = [4, 16]
@@ -512,6 +603,11 @@ MODEL_DEFINITIONS = {
     'best_e_comp_1' : Best_Dense_Comp_1,
     'best_e_comp_10': Best_Dense_Comp_10,
     'best_e_comp_20': Best_Dense_Comp_20,
+
+    'e_simp_1'      : Elv_Simp_1,
+    'e_simp_10'     : Elv_Simp_10,
+    'a_simp_1'      : Ail_Simp_1,
+    't_simp_1'      : Thr_Simp_1,
 
     'best_a_1'      : Best_Ail_1,
     'best_a_10'     : Best_Ail_10,

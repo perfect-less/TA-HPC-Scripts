@@ -34,6 +34,13 @@ def CleanColumns(flight_DF):
                 # Just Delete all the out of range aileron param.
                 flight_DF.loc[ (flight_DF[column_name]) < 60 * math.pi / 180 , column_name ] = None
                 
+            if column_name == "ctrlcolumn_pos_capt":
+                # Just Delete all the out of range ctrl. column param.
+                flight_DF.loc[ flight_DF[column_name] < 1, column_name ] = None
+
+            if column_name == "ctrlwheel_pos_fo":
+                # Just Delete all the out of range ctrl. wheel param.
+                flight_DF.loc[ flight_DF[column_name] < 1, column_name ] = None
 
             flight_DF[column_name] = flight_DF[column_name].interpolate()
 
