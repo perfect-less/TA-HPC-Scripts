@@ -1,3 +1,10 @@
+SKIP_COLUMNS = [
+    'flap_0_bool', 'flap_1_bool', 'flap_2_bool', 'flap_3_bool', 'flap_4_bool', 'flap_5_bool', 'flap_6_bool',
+    'gs_captured',
+    'ctrl_rud',
+    # 'loc', 'loc_i', 'loc_d', 'phi'
+]
+
 ## Normalization
 def normalized(data, z, s, k = 1, minmax= False):
     return _norm(data, z, s, k, minmax), z, s
@@ -27,8 +34,10 @@ def DF_Nomalize(our_DF, ColParam = None):
         for column in columns:
             min_max = False
             
-            if column == "flap_te_pos":
-                min_max = True
+            if column in SKIP_COLUMNS:
+                # min_max = True
+                z = 0
+                s = 1
                 #our_DF[column], z, s = normalized(our_DF[column], our_DF.min()[column], our_DF.max()[column], minmax=min_max)
             else:
                 our_DF[column], z, s = normalized(our_DF[column], our_DF.mean()[column], our_DF.std()[column], minmax=min_max)

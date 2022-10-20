@@ -107,16 +107,6 @@ def GatherEmptyCtrlColumnIndexes(flight_DFs: List[pd.DataFrame], unusable_indexe
         flight_DF['ctrlcolumn_pos_capt'].replace('', np.nan, inplace=True)
         flight_DF['ctrlcolumn_pos_capt'].replace('', np.nan, inplace=True)
 
-        if (abs(flight_DF["ctrlcolumn_pos_capt"].diff().mean(axis=0)) <= 3):
-            unusable_indexes.append(i)
-            empty_count += 1
-            continue
-    
-        if (abs(flight_DF["ctrlcolumn_pos_capt"].diff().std(axis=0)) <= 0.5):
-            unusable_indexes.append(i)
-            empty_count += 1
-            continue
-
         if flight_DF.shape[0] == 0:
             unusable_indexes.append(i)
             empty_count += 1
@@ -131,8 +121,18 @@ def GatherEmptyCtrlColumnIndexes(flight_DFs: List[pd.DataFrame], unusable_indexe
             unusable_indexes.append(i)
             empty_count += 1
             continue
+
+        if (abs(flight_DF["ctrlcolumn_pos_capt"].diff().mean(axis=0)) <= 0.1):
+            unusable_indexes.append(i)
+            empty_count += 1
+            continue
+
+        if (flight_DF["ctrlcolumn_pos_capt"].median() >= 3000):
+            unusable_indexes.append(i)
+            empty_count += 1
+            continue
     
-    print ("unusable based on aileron: {}".format(empty_count))
+    print ("unusable based on control column: {}".format(empty_count))
     return unusable_indexes
 
 def GatherEmptyCtrlWheelIndexes(flight_DFs: List[pd.DataFrame], unusable_indexes: List[int]):
@@ -142,16 +142,6 @@ def GatherEmptyCtrlWheelIndexes(flight_DFs: List[pd.DataFrame], unusable_indexes
         flight_DF['ctrlwheel_pos_capt'].replace('', np.nan, inplace=True)
         flight_DF['ctrlwheel_pos_capt'].replace('', np.nan, inplace=True)
 
-        if (abs(flight_DF["ctrlwheel_pos_capt"].diff().mean(axis=0)) <= 3):
-            unusable_indexes.append(i)
-            empty_count += 1
-            continue
-    
-        if (abs(flight_DF["ctrlwheel_pos_capt"].diff().std(axis=0)) <= 0.5):
-            unusable_indexes.append(i)
-            empty_count += 1
-            continue
-
         if flight_DF.shape[0] == 0:
             unusable_indexes.append(i)
             empty_count += 1
@@ -166,8 +156,18 @@ def GatherEmptyCtrlWheelIndexes(flight_DFs: List[pd.DataFrame], unusable_indexes
             unusable_indexes.append(i)
             empty_count += 1
             continue
+
+        if (abs(flight_DF["ctrlwheel_pos_capt"].diff().mean(axis=0)) <= 0.1):
+            unusable_indexes.append(i)
+            empty_count += 1
+            continue
+
+        if (flight_DF["ctrlwheel_pos_capt"].median() >= 3990):
+            unusable_indexes.append(i)
+            empty_count += 1
+            continue
     
-    print ("unusable based on aileron: {}".format(empty_count))
+    print ("unusable based on control wheel: {}".format(empty_count))
     return unusable_indexes
 
 def GatherEmptyAileronIndexes(flight_DFs: List[pd.DataFrame], unusable_indexes: List[int]):

@@ -1,1 +1,1 @@
-model_id = 't_simp_1'
+model_id = 'a_simp_1'

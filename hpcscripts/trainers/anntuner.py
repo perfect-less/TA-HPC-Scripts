@@ -45,11 +45,22 @@ def run(tuner_id: str = None):
     print ("Data is ready, initializing tuner")
 
     # Iniializing tuner
-    tuner = kt.RandomSearch(
+    # tuner = kt.RandomSearch(
+    #     hypermodel=model_builder,
+    #     objective="val_mean_absolute_error",
+    #     max_trials=TUNING_CONF.MAX_TRIALS,
+    #     executions_per_trial=2,
+    #     overwrite=True,
+    #     directory="_tuning",
+    #     project_name="ann_tuning",
+    # )
+
+    tuner = kt.BayesianOptimization(
         hypermodel=model_builder,
         objective="val_mean_absolute_error",
         max_trials=TUNING_CONF.MAX_TRIALS,
-        executions_per_trial=2,
+        num_initial_points=50,
+        
         overwrite=True,
         directory="_tuning",
         project_name="ann_tuning",

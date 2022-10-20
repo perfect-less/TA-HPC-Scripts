@@ -150,9 +150,10 @@ def Simple_Dense_Ail():
 ## BESTs
 
 def Elv_Simp_1():
-    sequential_hidden_l = [4, 16]
+    sequential_hidden_l = [20]# [4, 16]
 
     sdense = tf.keras.Sequential([
+        # tf.keras.layers.GRU(10),
         tf.keras.layers.Flatten()
     ])
 
@@ -160,8 +161,12 @@ def Elv_Simp_1():
 
     return ModelDefBuilder(
         feature_columns=[
-            'gs_dev_ddm', 'theta_rad'],
-        seq_labels=['ctrlcolumn_pos_capt'],
+            #'alpha', 'throttle', 'gs', 'gs_d', 'gs_i', 'gamma_err', 'hdot', 'flap_0_bool', 'flap_1_bool', 'flap_2_bool', 'flap_3_bool', 'flap_4_bool', 'flap_5_bool', 'flap_6_bool'
+            # 'ias_err', 'alpha', 'gs', 'gs_d', 'gs_i', 'gamma_err', 'hdot', 'flap_0_bool', 'flap_1_bool', 'flap_2_bool', 'flap_3_bool', 'flap_4_bool', 'flap_5_bool', 'flap_6_bool'
+            'alpha', 'gs', 'gs_d', 'gs_i', 'gamma_err', 'hdot', 'Q',
+            'flap_0_bool', 'flap_1_bool', 'flap_2_bool', 'flap_3_bool', 'flap_4_bool', 'flap_5_bool', 'flap_6_bool'
+        ],
+        seq_labels=['ctrl_col'],
         input_window_width=1,
         label_window_width=1,
         label_shift=0,
@@ -194,18 +199,23 @@ def Elv_Simp_10():
     )
 
 def Ail_Simp_1():
-    sequential_hidden_l = [4, 16]
+    sequential_hidden_l = [20]# [10] # [4, 16]
 
     sdense = tf.keras.Sequential([
+        # tf.keras.layers.GRU(10),
         tf.keras.layers.Flatten()
     ])
 
     model = AddDenseHiddenLayer(sdense, sequential_hidden_l)
+    #model = sdense
 
     return ModelDefBuilder(
         feature_columns=[
-            'loc_dev_ddm', 'phi_rad'],
-        seq_labels=['ctrlwheel_pos_capt'],
+            #'loc', 'loc_i', 'loc_d', 'phi', 'ctrl_col', 'ctrl_rud', 'ias', 'hralt',
+            'phi', 'phi_i', 'P', 'loc', 'loc_i', 'loc_d', 'psi'
+            # 'flap_0_bool', 'flap_1_bool', 'flap_2_bool', 'flap_3_bool', 'flap_4_bool', 'flap_5_bool', 'flap_6_bool'
+            ],
+        seq_labels=['ctrl_whl'],
         input_window_width=1,
         label_window_width=1,
         label_shift=0,
@@ -216,9 +226,10 @@ def Ail_Simp_1():
     )
 
 def Thr_Simp_1():
-    sequential_hidden_l = [4, 16]
+    sequential_hidden_l = [20]# [4, 16]
 
     sdense = tf.keras.Sequential([
+        # tf.keras.layers.GRU(5),
         tf.keras.layers.Flatten()
     ])
 
@@ -226,8 +237,10 @@ def Thr_Simp_1():
 
     return ModelDefBuilder(
         feature_columns=[
-            'hralt_m', 'tas_mps'],
-        seq_labels=['pla_mean_rad'],
+            'ias_err', 'gs', 'gs_i', 'gs_d', 'gamma_err',
+            'flap_0_bool', 'flap_1_bool', 'flap_2_bool', 'flap_3_bool', 'flap_4_bool', 'flap_5_bool', 'flap_6_bool'
+            ],
+        seq_labels=['throttle'],
         input_window_width=1,
         label_window_width=1,
         label_shift=0,
@@ -236,6 +249,54 @@ def Thr_Simp_1():
 
         model=sdense
     )
+
+def Sas_Simp_1():
+    sequential_hidden_l = [4]# [4, 16]
+
+    sdense = tf.keras.Sequential([
+        # tf.keras.layers.GRU(20),
+        tf.keras.layers.Flatten()
+    ])
+
+    model = AddDenseHiddenLayer(sdense, sequential_hidden_l)
+
+    return ModelDefBuilder(
+        feature_columns=[
+            'hralt'],
+        seq_labels=['sas'],
+        input_window_width=1,
+        label_window_width=1,
+        label_shift=0,
+
+        sequential_hidden_l=sequential_hidden_l,
+
+        model=sdense
+    )
+
+def Flap_Simp_1():
+    sequential_hidden_l = [4]# [4, 16]
+
+    sdense = tf.keras.Sequential([
+        # tf.keras.layers.GRU(20),
+        tf.keras.layers.Flatten()
+    ])
+
+    model = AddDenseHiddenLayer(sdense, sequential_hidden_l)
+
+    return ModelDefBuilder(
+        feature_columns=[
+            'ias'],# 'ias'],
+        seq_labels=['flap_rat'],
+        input_window_width=1,
+        label_window_width=1,
+        label_shift=0,
+
+        sequential_hidden_l=sequential_hidden_l,
+
+        model=sdense
+    )
+
+
 
 
 
@@ -252,8 +313,10 @@ def Best_Dense_Min_1():
 
     return ModelDefBuilder(
         feature_columns=[
-            'hralt_m', 'hdot_1_mps', 'theta_rad', 'cas_mps', 'gamma_error_rad'],
-        seq_labels=['elv_l_rad', 'N1s_rpm'],
+            # 'hralt_m', 'hdot_1_mps', 'theta_rad', 'cas_mps', 'gamma_error_rad'],
+            'hralt_m', 'hdot_1_mps', 'theta_rad', 'tas_mps', 'gs_dev_ddm'],
+        # seq_labels=['elv_l_rad', 'N1s_rpm'],
+        seq_labels=['ctrlcolumn_pos_capt', 'pla_mean_rad'],
         input_window_width=1,
         label_window_width=1,
         label_shift=0,
@@ -275,8 +338,10 @@ def Best_Dense_Min_10():
 
     return ModelDefBuilder(
         feature_columns=[
-            'hralt_m', 'hdot_1_mps', 'theta_rad', 'cas_mps', 'gamma_error_rad'],
-        seq_labels=['elv_l_rad', 'N1s_rpm'],
+            # 'hralt_m', 'hdot_1_mps', 'theta_rad', 'cas_mps', 'gamma_error_rad'],
+            'hralt_m', 'hdot_1_mps', 'theta_rad', 'tas_mps', 'gs_dev_ddm'],
+        # seq_labels=['elv_l_rad', 'N1s_rpm'],
+        seq_labels=['ctrlcolumn_pos_capt', 'pla_mean_rad'],
         input_window_width=10,
         label_window_width=1,
         label_shift=0,
@@ -322,9 +387,10 @@ def Best_Dense_Comp_1():
 
     return ModelDefBuilder(
         feature_columns=[
-            'hralt_m', 'hdot_1_mps', 'theta_rad', 'cas_mps', 'gamma_error_rad',
-            'tailwind_mps', 'g_err_d_rad'],
-        seq_labels=['elv_l_rad', 'N1s_rpm'],
+            'hralt_m', 'hdot_1_mps', 'theta_rad', 'cas_mps', 'gs_dev_ddm',
+            'tailwind_mps'], # 'g_err_d_rad'
+        # seq_labels=['elv_l_rad', 'N1s_rpm'],
+        seq_labels=['ctrlcolumn_pos_capt', 'pla_mean_rad'],
         input_window_width=1,
         label_window_width=1,
         label_shift=0,
@@ -346,9 +412,10 @@ def Best_Dense_Comp_10():
 
     return ModelDefBuilder(
         feature_columns=[
-            'hralt_m', 'hdot_1_mps', 'theta_rad', 'cas_mps', 'gamma_error_rad',
-            'tailwind_mps', 'g_err_d_rad'],
-        seq_labels=['elv_l_rad', 'N1s_rpm'],
+            'hralt_m', 'hdot_1_mps', 'theta_rad', 'cas_mps', 'gs_dev_ddm',
+            'tailwind_mps'], # 'g_err_d_rad'
+        # seq_labels=['elv_l_rad', 'N1s_rpm'],
+        seq_labels=['ctrlcolumn_pos_capt', 'pla_mean_rad'],
         input_window_width=10,
         label_window_width=1,
         label_shift=0,
@@ -608,6 +675,9 @@ MODEL_DEFINITIONS = {
     'e_simp_10'     : Elv_Simp_10,
     'a_simp_1'      : Ail_Simp_1,
     't_simp_1'      : Thr_Simp_1,
+
+    's_simp_1'      : Sas_Simp_1,
+    'f_simp_1'      : Flap_Simp_1,
 
     'best_a_1'      : Best_Ail_1,
     'best_a_10'     : Best_Ail_10,

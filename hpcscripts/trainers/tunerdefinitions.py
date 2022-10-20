@@ -5,12 +5,31 @@ import tensorflow.keras as keras
 from hpcscripts.trainers.modeldefinitions import ModelDefBuilder, ResidualWrapper
 from hpcscripts.option import globalparams as G_PARAMS
 
-FEATURES_COLUMNS = [
-            'hralt_m', 'hdot_1_mps', 'theta_rad', 'cas_mps', 
-            'gamma_error_rad', 'tailwind_mps', 'g_err_d_rad',
+# Elevator
+ELV_FEATURES = [
+            'alpha', 'gs', 'gs_d', 'gs_i', 'gamma_err', 'hdot',
+            'flap_0_bool', 'flap_1_bool', 'flap_2_bool', 'flap_3_bool', 'flap_4_bool', 'flap_5_bool', 'flap_6_bool'
         ]
-LABELS = ['elv_l_rad', 'N1s_rpm']
-INPUT_WINDOW_WIDTH = 20
+ELV_LABELS = ['ctrl_col']
+
+# Aileron
+AIL_FEATURES = [
+            'phi', 'phi_i', 'phi_d', 'loc', 'loc_i', 'loc_d',            
+        ]
+AIL_LABELS = ['ctrl_whl']
+
+# Throttle
+THR_FEATURES = [
+            'ias_err', 'gs', 'gs_i', 'gs_d',
+            'flap_0_bool', 'flap_1_bool', 'flap_2_bool', 'flap_3_bool', 'flap_4_bool', 'flap_5_bool', 'flap_6_bool'    
+        ]
+THR_LABELS = ['throttle']
+
+
+FEATURES_COLUMNS = ELV_FEATURES
+LABELS           = ELV_LABELS
+
+INPUT_WINDOW_WIDTH = 1# 20
 
 
 def minimal_tuner():
@@ -23,17 +42,18 @@ def minimal_tuner():
         model.add(tf.keras.layers.Flatten())
 
         # Tune the number of layers.
-        for i in range(hp.Int("num_layers", 1, 3)):
+        for i in range(hp.Int("num_layers", 1, 2)):
             model.add(
                 keras.layers.Dense(
                     # Tune number of units separately.
-                    units=hp.Int(f"units_{i}", min_value=2, max_value=40, step=2),
+                    units=hp.Int(f"units_{i}", min_value=10, max_value=60, step=2),
                     activation= 'relu' # hp.Choice("activation", ["relu", "tanh"]),
                 )
             )
-            if hp.Boolean(f'add_dropout_{i}'):
+            dropout_num = hp.Float(f'dropout_{i}', min_value=0.0, max_value=0.6, step=0.1)
+            if dropout_num > 0.0:
                 model.add(
-                    keras.layers.Dropout(hp.Float(f'dropout_{i}', min_value=0.2, max_value=0.8, step=0.1))
+                    keras.layers.Dropout(dropout_num)
                 )
 
 
@@ -55,7 +75,7 @@ def minimal_tuner():
     return ModelDefBuilder(
         input_window_width  = input_window_width,
         label_window_width  = 1,
-        label_shift         = 1,
+        label_shift         = 0,
         feature_columns    = FEATURES_COLUMNS,
         seq_labels         = LABELS,
         use_residual_wrap  = False,
