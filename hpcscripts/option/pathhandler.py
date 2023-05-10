@@ -16,6 +16,9 @@ def GetRawDataPath():
 def GetProcessedDataPath():
     return os.path.join(GetDataPath(), "Processed")
 
+def GetCustomProcessedDataPath(processed_dir: str="Processed.AIL_GOOD"):
+    return os.path.join(GetDataPath(), processed_dir)
+
 def GetModelsPath():
     return os.path.join(GetDataPath(), "Models")
 

@@ -150,7 +150,7 @@ def Simple_Dense_Ail():
 ## BESTs
 
 def Elv_Simp_1():
-    sequential_hidden_l = [20]# [4, 16]
+    sequential_hidden_l = [20]# 12 [4, 16]
 
     sdense = tf.keras.Sequential([
         # tf.keras.layers.GRU(10),
@@ -163,7 +163,9 @@ def Elv_Simp_1():
         feature_columns=[
             #'alpha', 'throttle', 'gs', 'gs_d', 'gs_i', 'gamma_err', 'hdot', 'flap_0_bool', 'flap_1_bool', 'flap_2_bool', 'flap_3_bool', 'flap_4_bool', 'flap_5_bool', 'flap_6_bool'
             # 'ias_err', 'alpha', 'gs', 'gs_d', 'gs_i', 'gamma_err', 'hdot', 'flap_0_bool', 'flap_1_bool', 'flap_2_bool', 'flap_3_bool', 'flap_4_bool', 'flap_5_bool', 'flap_6_bool'
-            'alpha', 'gs', 'gs_d', 'gs_i', 'gamma_err', 'hdot', 'Q',
+
+            'alpha', 'gs', 'gs_d', 'gs_i', 'gamma_err', 'hdot',# 'Q',
+            # 'ias_err', 'gs', 'gs_d', 'gs_i', 'gamma_err', # 'hdot', 
             'flap_0_bool', 'flap_1_bool', 'flap_2_bool', 'flap_3_bool', 'flap_4_bool', 'flap_5_bool', 'flap_6_bool'
         ],
         seq_labels=['ctrl_col'],
@@ -212,7 +214,7 @@ def Ail_Simp_1():
     return ModelDefBuilder(
         feature_columns=[
             #'loc', 'loc_i', 'loc_d', 'phi', 'ctrl_col', 'ctrl_rud', 'ias', 'hralt',
-            'phi', 'phi_i', 'P', 'loc', 'loc_i', 'loc_d', 'psi'
+            'phi', 'phi_i', 'phi_d', 'loc', 'loc_i', 'loc_d',# 'psi'
             # 'flap_0_bool', 'flap_1_bool', 'flap_2_bool', 'flap_3_bool', 'flap_4_bool', 'flap_5_bool', 'flap_6_bool'
             ],
         seq_labels=['ctrl_whl'],
@@ -226,7 +228,7 @@ def Ail_Simp_1():
     )
 
 def Thr_Simp_1():
-    sequential_hidden_l = [20]# [4, 16]
+    sequential_hidden_l = [12]# [4, 16]
 
     sdense = tf.keras.Sequential([
         # tf.keras.layers.GRU(5),
@@ -237,7 +239,7 @@ def Thr_Simp_1():
 
     return ModelDefBuilder(
         feature_columns=[
-            'ias_err', 'gs', 'gs_i', 'gs_d', 'gamma_err',
+            'ias_err', 'gs', 'gs_i', #'gs_d', #'gamma_err',
             'flap_0_bool', 'flap_1_bool', 'flap_2_bool', 'flap_3_bool', 'flap_4_bool', 'flap_5_bool', 'flap_6_bool'
             ],
         seq_labels=['throttle'],
